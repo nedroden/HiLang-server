@@ -1,19 +1,39 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class User(models.Model):
     email = models.CharField(max_length=50)
     name = models.CharField(max_length=25)
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
+    def __repr__(self):
+        return {
+            "email": self.email,
+            "name": self.name,
+            "password": self.password,
+            "distributer": self.distributor,
+        }
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
+    def __repr__(self):
+        return {
+            "name": self.name,
+        }
 
 class Course(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return {
+            "name": self.name,
+            "desc": self.description,
+            "user": self.user,
+            "lang": self.language,
+        }
 
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
