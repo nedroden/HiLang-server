@@ -80,7 +80,7 @@ DATABASES = {
         'NAME': 'hilang',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': '!hilang!',
+        'PASSWORD': 'root',
     },
 }
 
