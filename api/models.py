@@ -100,7 +100,7 @@ class SentenceStructureQuestion(models.Model):
     translation = models.CharField(max_length=100)
     correctOrder = models.CharField(max_length=20)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(null=True)
 
     def __repr__(self):
         return {
