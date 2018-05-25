@@ -35,9 +35,38 @@ class Course(models.Model):
             "lang": self.language,
         }
 
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return {
+            "user": self.user,
+            "course": self.course,
+        }
+
+class Lesson(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return {
+            "name": self.name,
+            "desc": self.description,
+            "course": self.course,
+        }
+
+
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
+    def __repr__(self):
+        return {
+            "name": self.name,
+            "desc": self.description,
+        }
+
     def __repr__(self):
         return {
             "name": self.name,
@@ -57,10 +86,26 @@ class Exercise(models.Model):
             "type": self.type,
         }
 
+    def __repr__(self):
+        return {
+            "name": self.name,
+            "desc": self.description,
+            "course": self.course,
+            "type": self.type,
+        }
+
+
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    def __repr__(self):
+        return {
+            "native": self.native,
+            "translation": self.translation,
+            "exercise": self.exercise,
+        }
+
     def __repr__(self):
         return {
             "native": self.native,
@@ -73,12 +118,16 @@ class SentenceStructureQuestion(models.Model):
     translation = models.CharField(max_length=100)
     correctOrder = models.CharField(max_length=20)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    description = models.TextField(null=True)
+    
     def __repr__(self):
         return {
             "native": self.native,
             "translation": self.translation,
             "correctOrder": self.correctOrder,
             "exercise": self.exercise,
+            "desc": self.description,
+
         }
 
 class SentenceStructureOption(models.Model):
