@@ -25,6 +25,8 @@ class Course(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subscribers = models.BigIntegerField()
+    image = models.CharField(max_length=100)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
 
     def __repr__(self):
@@ -33,6 +35,8 @@ class Course(models.Model):
             "desc": self.description,
             "user": self.user,
             "lang": self.language,
+            "subs": self.subscribers,
+            "img":  self.image,
         }
 
 class Subscription(models.Model):
@@ -67,14 +71,6 @@ class Exercise(models.Model):
             "type": self.type,
         }
 
-    def __repr__(self):
-        return {
-            "name": self.name,
-            "desc": self.description,
-            "course": self.course,
-            "type": self.type,
-        }
-
 
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
@@ -85,13 +81,6 @@ class WordListQuestion(models.Model):
             "native": self.native,
             "translation": self.translation,
             "exercise": self.lesson,
-        }
-
-    def __repr__(self):
-        return {
-            "native": self.native,
-            "translation": self.translation,
-            "exercise": self.exercise,
         }
 
 class SentenceStructureQuestion(models.Model):
