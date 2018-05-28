@@ -35,7 +35,17 @@ class Course(models.Model):
             "lang": self.language,
         }
 
-class LessonType(models.Model):
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return {
+            "user": self.user,
+            "course": self.course,
+        }
+
+class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
     def __repr__(self):
@@ -44,11 +54,11 @@ class LessonType(models.Model):
             "desc": self.description,
         }
 
-class Lesson(models.Model):
+class Exercise(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type = models.ForeignKey(LessonType, on_delete=models.CASCADE)
+    type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
     def __repr__(self):
         return {
             "name": self.name,
@@ -57,10 +67,19 @@ class Lesson(models.Model):
             "type": self.type,
         }
 
+    def __repr__(self):
+        return {
+            "name": self.name,
+            "desc": self.description,
+            "course": self.course,
+            "type": self.type,
+        }
+
+
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     def __repr__(self):
         return {
             "native": self.native,
@@ -68,17 +87,27 @@ class WordListQuestion(models.Model):
             "exercise": self.lesson,
         }
 
+    def __repr__(self):
+        return {
+            "native": self.native,
+            "translation": self.translation,
+            "exercise": self.exercise,
+        }
+
 class SentenceStructureQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
     correctOrder = models.CharField(max_length=20)
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    description = models.TextField(null=True)
+
     def __repr__(self):
         return {
             "native": self.native,
             "translation": self.translation,
             "correctOrder": self.correctOrder,
-            "exercise": self.lesson,
+            "exercise": self.exercise,
+            "desc": self.description,
         }
 
 class SentenceStructureOption(models.Model):
