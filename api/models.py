@@ -25,8 +25,8 @@ class Course(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    subscribers = models.BigIntegerField()
-    image = models.CharField(max_length=100)
+    subscribers = models.BigIntegerField(default=0)
+    image = models.CharField(max_length=100, null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
 
     def __repr__(self):
@@ -52,6 +52,7 @@ class Subscription(models.Model):
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
+
     def __repr__(self):
         return {
             "name": self.name,
@@ -63,6 +64,7 @@ class Exercise(models.Model):
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
+
     def __repr__(self):
         return {
             "name": self.name,
@@ -75,12 +77,13 @@ class Exercise(models.Model):
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
-    lesson = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+
     def __repr__(self):
         return {
             "native": self.native,
             "translation": self.translation,
-            "exercise": self.lesson,
+            "exercise": self.exercise,
         }
 
 class SentenceStructureQuestion(models.Model):
@@ -103,6 +106,7 @@ class SentenceStructureOption(models.Model):
     value = models.CharField(max_length=100)
     tag = models.IntegerField()
     question = models.ForeignKey(SentenceStructureQuestion, on_delete=models.CASCADE)
+
     def __repr__(self):
         return {
             "value": self.value,
