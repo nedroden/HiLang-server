@@ -25,6 +25,8 @@ class Course(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subscribers = models.BigIntegerField(default=0)
+    image = models.CharField(max_length=100, null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
 
     def __repr__(self):
@@ -33,6 +35,8 @@ class Course(models.Model):
             "desc": self.description,
             "user": self.user,
             "lang": self.language,
+            "subs": self.subscribers,
+            "img":  self.image,
         }
 
 class Subscription(models.Model):
@@ -45,27 +49,9 @@ class Subscription(models.Model):
             "course": self.course,
         }
 
-class Lesson(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    def __repr__(self):
-        return {
-            "name": self.name,
-            "desc": self.description,
-            "course": self.course,
-        }
-
-
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
-    def __repr__(self):
-        return {
-            "name": self.name,
-            "desc": self.description,
-        }
 
     def __repr__(self):
         return {
@@ -78,13 +64,6 @@ class Exercise(models.Model):
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
-    def __repr__(self):
-        return {
-            "name": self.name,
-            "desc": self.description,
-            "course": self.course,
-            "type": self.type,
-        }
 
     def __repr__(self):
         return {
@@ -99,12 +78,6 @@ class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    def __repr__(self):
-        return {
-            "native": self.native,
-            "translation": self.translation,
-            "exercise": self.exercise,
-        }
 
     def __repr__(self):
         return {
@@ -119,7 +92,7 @@ class SentenceStructureQuestion(models.Model):
     correctOrder = models.CharField(max_length=20)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     description = models.TextField(null=True)
-    
+
     def __repr__(self):
         return {
             "native": self.native,
@@ -127,13 +100,13 @@ class SentenceStructureQuestion(models.Model):
             "correctOrder": self.correctOrder,
             "exercise": self.exercise,
             "desc": self.description,
-
         }
 
 class SentenceStructureOption(models.Model):
     value = models.CharField(max_length=100)
     tag = models.IntegerField()
     question = models.ForeignKey(SentenceStructureQuestion, on_delete=models.CASCADE)
+
     def __repr__(self):
         return {
             "value": self.value,
