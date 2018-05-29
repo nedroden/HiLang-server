@@ -18,6 +18,9 @@ def get_users(request):
 def get_user(request, user_id):
     return HttpResponse(serializers.serialize('json', models.User.objects.filter(id=user_id)))
 
+def get_user_by_cred(request, email, password):
+    return HttpResponse(serializers.serialize('json', models.User.objects.filter(email=email, password=password)))
+
 # Courses
 def get_courses(request):
     return HttpResponse(serializers.serialize('json', models.Course.objects.all()))
