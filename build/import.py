@@ -13,6 +13,7 @@ terminal_width = os.get_terminal_size().columns
 
 def throw_error(message, detailed=None):
     print('Error: {0}'.format(message))
+    print(detailed)
 
 
 def report_status(message, has_status=False, status=True, display_dots=True):
@@ -59,7 +60,7 @@ def request_information(message, minlength=0, maxlength=25, hide=False, default=
         print('Invalid input. Input should be between {0} and {1} characters'.format(minlength, maxlength))
 
 
-def import_tables(cursor, wiki_info):
+def import_tables(cursor, info):
     statements = []
 
     result = True
@@ -69,9 +70,8 @@ def import_tables(cursor, wiki_info):
 
             for line in file:
                 clean_line = line.strip()
-                line = line.replace('{db_prefix}', db_pref)
 
-                for key, value in wiki_info.items():
+                for key, value in info.items():
                     line = line.replace('{' + 'data:{0}'.format(key) + '}', value)
 
                 if clean_line.startswith('--') or not clean_line:
@@ -181,12 +181,14 @@ def run():
         report_status('Aborting')
         return
 
+    '''
     print(':: Create root account')
     try:
         subprocess.run((('python3' if sys.platform is 'posix' else 'python') + ' ../manage.py createsuperuser').split())
 
     except subprocess.CalledProcessError as e:
         throw_error('Could not create super user', e)
+    '''
 
     print('Thank you for installing HiLang. The installation is now complete.')
 
