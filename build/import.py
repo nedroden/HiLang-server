@@ -14,16 +14,6 @@ terminal_width = os.get_terminal_size().columns
 def throw_error(message, detailed=None):
     print('Error: {0}'.format(message))
 
-    try:
-        with open('log.txt', 'a') as file:
-            file.write('[{0}] {1} {2}\n'.format(time.time(), message, detailed))
-
-    except IOError as e:
-        print('Could not add error message to log')
-        return
-
-    print('Error message added to log')
-
 
 def report_status(message, has_status=False, status=True, display_dots=True):
     global terminal_width
