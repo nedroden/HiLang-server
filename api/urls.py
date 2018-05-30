@@ -19,7 +19,9 @@ urlpatterns = [
 
     # Subscriptions
     path('user/<int:user_id>/subscriptions/', views.get_user_subscriptions, name='user_subscriptions'),
-    path('course/<int:course_id>/subscriptions/', views.get_course_subscriptions, name='course_subscriptions')
+    path('course/<int:course_id>/subscriptions/', views.get_course_subscriptions, name='course_subscriptions'),
+
+    path('login/', views.login, name='login'),
 ]
 
 # integratie google, online woordenboek iets in die richting?

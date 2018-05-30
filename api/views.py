@@ -26,7 +26,7 @@ def get_user(request, user_id):
 
 
 def get_user_by_cred(request, email, password):
-    return HttpResponse(serializers.serialize('json', models.User.objects.filter(email=email, password=password)))
+    return get_json_response(serializers.serialize('json', models.User.objects.filter(email=email, password=password)))
 
 # Courses
 def get_courses(request):
@@ -53,3 +53,8 @@ def get_user_subscriptions(request, user_id):
 
 def get_course_subscriptions(request, course_id):
     return get_json_response(serialize.serialize('json', models.Subscription.objects.filter(course=course_id)))
+
+def login(request):
+    return get_json_response(serialize.serialize({
+        'login' : (models.User.get(email=request.POST['email'], password=request.POST['password']) != None)
+    }))
