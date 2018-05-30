@@ -16,9 +16,11 @@ class User(models.Model):
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
+    flag = models.CharField(max_length=50, null=True)
     def __repr__(self):
         return {
             "name": self.name,
+            "flag": self.flag
         }
 
 class Course(models.Model):
