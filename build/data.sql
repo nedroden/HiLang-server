@@ -76,23 +76,6 @@ INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`) VALUES
 -- Gegevens worden geëxporteerd voor tabel `django_content_type`
 --
 
-INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
-(1, 'api', 'course'),
-(2, 'api', 'exercise'),
-(3, 'api', 'exercisetype'),
-(4, 'api', 'language'),
-(5, 'api', 'user'),
-(6, 'api', 'sentencestructureoption'),
-(7, 'api', 'sentencestructurequestion'),
-(8, 'api', 'wordlistquestion'),
-(9, 'api', 'subscription'),
-(10, 'admin', 'logentry'),
-(11, 'auth', 'permission'),
-(12, 'auth', 'group'),
-(13, 'auth', 'user'),
-(14, 'contenttypes', 'contenttype'),
-(15, 'sessions', 'session');
-
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
 (1, 'pbkdf2_sha256$100000$kEJf41igeCuu$iHOT0wafWzt+SlSOD7N7iPdigUNx5bzVJfz5g8JPyR8=', '2018-05-30 08:00:26.447438', 1, 'root', '', '', 'bertde.boer@hotmail.com', 1, 1, '2018-05-30 07:59:58.949897');
 

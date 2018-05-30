@@ -60,8 +60,10 @@ def request_information(message, minlength=0, maxlength=25, hide=False, default=
         print('Invalid input. Input should be between {0} and {1} characters'.format(minlength, maxlength))
 
 
-def import_tables(cursor, info):
+def import_tables(connection, info):
     statements = []
+
+    cursor = connection.cursor
 
     result = True
     try:
@@ -90,7 +92,7 @@ def import_tables(cursor, info):
         for statement in statements:
             cursor.execute(statement)
 
-        statements = []
+        connection.connection.commit()
 
     except Exception as e:
         result = False
@@ -174,7 +176,7 @@ def run():
 
         print('Database connection established')
 
-        if not import_tables(connection.cursor, {}):
+        if not import_tables(connection, {}):
             return
 
     else:
