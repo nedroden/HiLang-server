@@ -19,10 +19,11 @@ urlpatterns = [
 
     # Languages
     path('languages/', views.get_languages, name='languages'),
+    path('language/<int:language_id>/', views.get_lang_details, name="lang_details"),
 
     # Subscriptions
-    path('user/<int:user_id>/subscriptions/', views.get_user_subscriptions, name='user_subscriptions'),
-    path('course/<int:course_id>/subscriptions/', views.get_course_subscriptions, name='course_subscriptions')
+    path('user/subscriptions/<int:user_id>/', views.get_user_subscriptions, name="user_subsricptions"),
+    path('course/<int:course_id>/subscriptions', views.get_course_subscriptions, name='course_subscriptions')
 ]
 
 # integratie google, online woordenboek iets in die richting?
