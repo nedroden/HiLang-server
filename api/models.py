@@ -6,6 +6,10 @@ class User(models.Model):
     name = models.CharField(max_length=25)
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return self.email
+
     def __repr__(self):
         return {
             "email": self.email,
@@ -17,6 +21,10 @@ class User(models.Model):
 class Language(models.Model):
     name = models.CharField(max_length=20)
     flag = models.CharField(max_length=50, null=True)
+
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         return {
             "name": self.name,
@@ -30,6 +38,9 @@ class Course(models.Model):
     subscribers = models.BigIntegerField(default=0)
     image = models.CharField(max_length=100, null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return {
@@ -45,6 +56,9 @@ class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return '{} : {}'.format(self.user, self.course)
+
     def __repr__(self):
         return {
             "user": self.user,
@@ -54,6 +68,9 @@ class Subscription(models.Model):
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return {
@@ -66,6 +83,9 @@ class Exercise(models.Model):
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} in {}'.format(self.name, self.course)
 
     def __repr__(self):
         return {
