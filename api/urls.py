@@ -10,6 +10,7 @@ urlpatterns = [
     # Users
     path('users/',views.get_users, name='users'),
     path('user/<int:user_id>/', views.get_user, name='user'),
+    path('user/create', views.create_user, name='create_user'),
 
     # Courses
     path('courses/',views.get_courses, name='courses'),
