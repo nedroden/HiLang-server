@@ -43,6 +43,9 @@ def get_courses(request):
 def get_course(request, course_id):
     return get_json_response(serializers.serialize('json', Course.objects.filter(id=course_id)))
 
+def get_public_courses(request):
+    return get_json_response(serializers.serialize('json', Course.objects.filter(public=1)))
+
 def get_course_lang(request, language_id):
     return get_json_response(serializers.serialize('json', Course.objects.filter(language=language_id)))
 
