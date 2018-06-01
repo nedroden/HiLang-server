@@ -18,6 +18,7 @@ class User(models.Model):
             "distributer": self.distributor,
         }
 
+
 class Language(models.Model):
     name = models.CharField(max_length=20)
     flag = models.CharField(max_length=50, null=True)
@@ -30,6 +31,7 @@ class Language(models.Model):
             "name": self.name,
             "flag": self.flag
         }
+
 
 class Course(models.Model):
     name = models.CharField(max_length=50)
@@ -54,6 +56,7 @@ class Course(models.Model):
             "pub":  self.public,
         }
 
+
 class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -67,6 +70,7 @@ class Subscription(models.Model):
             "course": self.course,
         }
 
+
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
@@ -79,6 +83,7 @@ class ExerciseType(models.Model):
             "name": self.name,
             "desc": self.description,
         }
+
 
 class Exercise(models.Model):
     name = models.CharField(max_length=30)
@@ -110,6 +115,7 @@ class WordListQuestion(models.Model):
             "exercise": self.exercise,
         }
 
+
 class SentenceStructureQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
@@ -125,6 +131,7 @@ class SentenceStructureQuestion(models.Model):
             "exercise": self.exercise,
             "desc": self.description,
         }
+
 
 class SentenceStructureOption(models.Model):
     value = models.CharField(max_length=100)
