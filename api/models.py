@@ -38,7 +38,7 @@ class Course(models.Model):
     description = models.TextField(null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscribers = models.BigIntegerField(default=0)
-    image = models.CharField(max_length=100, null=True)
+    image = models.CharField(max_length=200, null=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
     public = models.PositiveSmallIntegerField(default=0)
 
