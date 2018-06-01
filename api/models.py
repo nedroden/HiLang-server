@@ -35,11 +35,12 @@ class Language(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscribers = models.BigIntegerField(default=0)
     image = models.CharField(max_length=100, null=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
+    public = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -52,6 +53,7 @@ class Course(models.Model):
             "lang": self.language,
             "subs": self.subscribers,
             "img":  self.image,
+            "pub":  self.public,
         }
 
 

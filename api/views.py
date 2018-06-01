@@ -8,14 +8,11 @@ from django.db import IntegrityError
 
 from api.models import *
 
-
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
-
 def index(request):
     return HttpResponse("Dit is een API")
-
 
 # Login
 def login(request):
@@ -44,13 +41,23 @@ def create_user(request):
 def get_courses(request):
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
-
 def get_course(request, course_id):
     return get_json_response(serializers.serialize('json', Course.objects.filter(id=course_id)))
+
+def get_public_courses(request):
+    return get_json_response(serializers.serialize('json', Course.objects.filter(public=1)))
 
 
 def get_course_lang(request, language_id):
     return get_json_response(serializers.serialize('json', Course.objects.filter(language=language_id)))
+
+def create_course(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        user = User.objects.get(pk=data['user'])
+        course = Course(name=data['name'], user=user)
+        course.save()
+        return get_json_response(serializers.serialize('json', [course]))
 
 
 # Languages
@@ -71,7 +78,6 @@ def get_user_subscriptions(request, user_id):
         courseData = models.Course.objects.get(pk=course_id)
         returnData.append(courseData)
     return get_json_response(serializers.serialize('json', returnData))
-
 
 def get_course_subscriptions(request, course_id):
     return get_json_response(serializers.serialize('json', models.Subscription.objects.filter(course=course_id)))
