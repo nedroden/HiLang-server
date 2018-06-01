@@ -76,20 +76,20 @@ def get_languages(request):
 
 
 def get_lang_details(request, language_id):
-    return get_json_response(serializers.serialize('json', models.Language.objects.filter(id=language_id)))
+    return get_json_response(serializers.serialize('json', Language.objects.filter(id=language_id)))
 
 
 # Subscriptions
 def get_user_subscriptions(request, user_id):
-    subscriptionData = serializers.serialize('json', models.Subscription.objects.filter(user=models.User.objects.get(pk=user_id)))
+    subscriptionData = serializers.serialize('json', Subscription.objects.filter(user=User.objects.get(pk=user_id)))
     data = json.loads(subscriptionData)
     returnData = []
     for sub in data:
         course_id = sub['fields']['course']
-        courseData = models.Course.objects.get(pk=course_id)
+        courseData = Course.objects.get(pk=course_id)
         returnData.append(courseData)
     return get_json_response(serializers.serialize('json', returnData))
 
 
 def get_course_subscriptions(request, course_id):
-    return get_json_response(serializers.serialize('json', models.Subscription.objects.filter(course=course_id)))
+    return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))

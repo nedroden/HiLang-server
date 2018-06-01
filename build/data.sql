@@ -1,4 +1,4 @@
---
+﻿--
 -- Database: `hilang`
 --
 
@@ -41,13 +41,13 @@ INSERT INTO `api_exercisetype` (`id`, `name`, `description`) VALUES
 -- Gegevens worden geëxporteerd voor tabel `api_language`
 --
 
-INSERT INTO `api_language` (`id`, `name`) VALUES
-(1, 'English'),
-(2, 'Dutch'),
-(3, 'German'),
-(4, 'French'),
-(5, 'Russian'),
-(6, 'Spanish');
+INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
+(1, 'English', 'england'),
+(2, 'Dutch', 'netherlands'),
+(3, 'German', 'germany'),
+(4, 'French', 'france'),
+(5, 'Russian', 'russia'),
+(6, 'Spanish', 'spain');
 
 --
 -- Gegevens worden geëxporteerd voor tabel `api_subscription`
