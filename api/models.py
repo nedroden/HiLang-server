@@ -91,6 +91,12 @@ class Exercise(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
 
+    def delete(self, user_id):
+        user = User.objects.get(pk=user_id)
+
+        if self.course.user.id == user.id:
+            super().delete()
+
     def __str__(self):
         return '{} in {}'.format(self.name, self.course)
 
