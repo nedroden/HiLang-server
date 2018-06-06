@@ -70,6 +70,14 @@ def create_course(request):
         return get_json_response(serializers.serialize('json', [course]))
 
 
+def get_lesson(request, id):
+    vocabulary = []
+    exercise = list(Exercise.objects.filter(pk=id).values())
+    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+
+    return HttpResponse(json.dumps(exercise), content_type='application/json')
+
+
 # Languages
 def get_languages(request):
     return get_json_response(serializers.serialize('json', Language.objects.all()))
