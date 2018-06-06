@@ -9,9 +9,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 --
 
 INSERT INTO `api_course` (`id`, `name`, `description`, `language_id`, `user_id`, `image`, `subscribers`) VALUES
-(1, 'English for beginners', 'Learn to write English properly.', 1, 1, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdH', 69),
-(2, 'French for beginners', 'Learn to speak French properly', 4, 4, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUTEhMWFRUXGBUVGBcYFhcaGBgVFxUWFhcVG', 420),
-(3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTEhIVFRUXFxcXFRcWGBgVGhgXFR0XFxcVF', 1337);
+(1, 'English for beginners', 'Learn to write English properly.', 1, 1, 'http://www.linguapaths.com/wp-content/uploads/2016/09/regular-english-course-valencia.jpg', 69),
+(2, 'French for beginners', 'Learn to speak French properly', 4, 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420),
+(3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337);
 
 --
 -- Gegevens worden geëxporteerd voor tabel `api_exercise`
