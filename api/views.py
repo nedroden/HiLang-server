@@ -4,10 +4,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login
 import json
+import string
+import random
 from django.db import IntegrityError
-
 from api.models import *
 
+def generate_token():
+    alphabet = string.ascii_letters + string.digits
+    while True:
+        return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
@@ -21,8 +26,20 @@ def index(request):
 def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
-        return get_json_response(serializers.serialize('json', User.objects.filter(email=data['email'], password=data['password'])))
-
+        user = User.objects.get(email=data['email'], password=data['password'])
+        token = Token(token=generate_token(), user=User.objects.get(pk=1))
+        token.save()
+        return JsonResponse({'user': {'email': user.email,
+                                      'name': user.name,
+                                      'distributor': user.distributor,},
+                             'token': token.token}, safe=False)
+        # token = Token(token=generate_token(), user=user)
+        # token.save()
+        # #returnData = [user, repr(token)]
+        # returnData = {'user': user,
+        #               'token': token}
+        # return get_json_response(serializers.serialize('json', json.dumps(returnData)))
+        #return get_json_response(serializers.serialize('json', [user]))
 
 # Users
 def get_users(request):
