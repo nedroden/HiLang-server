@@ -7,8 +7,8 @@ class User(models.Model):
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
 
-    #def __str__(self):
-    #     return self.email
+    def __str__(self):
+        return self.email
 
     def __repr__(self):
         return {
@@ -25,7 +25,7 @@ class Token(models.Model):
     attempt = models.IntegerField(default=0);
 
     def __str__(self):
-        return self.token
+        return str(self.user) + " : " + self.token
 
     def __repr__(self):
         return {"token": self.token}
