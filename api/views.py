@@ -49,8 +49,24 @@ def get_courses(request):
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
 
-def get_course(request, course_id):
-    return get_json_response(serializers.serialize('json', Course.objects.filter(id=course_id)))
+def get_course(request, course_id, user_id):
+    courseData = Course.objects.get(id=course_id)
+    authorData = User.objects.get(pk=user_id)
+    favoriteData = Favorite.objects.filter(user=authorData,course=Course.objects.get(pk=course_id))
+    if not favoriteData:
+        favorite = False
+    else:
+        favorite = True
+
+    returnData = {
+        'id': courseData.id,
+        'name': courseData.name,
+        'author': authorData.name,
+        'description': courseData.description,
+        'image': courseData.image,
+        'favorite': favorite
+    }
+    return JsonResponse(returnData)
 
 
 def get_public_courses(request):
@@ -109,3 +125,14 @@ def del_favorite(request):
         entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
         entry.delete()
     return get_json_response(request)
+
+
+def get_user_favorites(request, user_id):
+    favoriteData = serializers.serialize('json', Favorite.objects.filter(user=User.objects.get(pk=user_id)))
+    data = json.loads(favoriteData)
+    returnData = []
+    for fav in data:
+        course_id = fav['fields']['course']
+        courseData = Course.objects.get(pk=course_id)
+        returnData.append(courseData)
+    return get_json_response(serializers.serialize('json', returnData))
