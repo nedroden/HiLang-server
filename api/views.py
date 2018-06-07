@@ -15,13 +15,29 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
+def check_token(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        try:
+            user = User.objects.get(pk=data['hl_user_id'])
+            userTokens = Token.objects.filter(user=user)
+            for token in userTokens:
+                if (token.token == data['hl_token']):
+                    if (user.attempt > 0):
+                        user.attempt = 0
+                        user.save()
+                    return JsonResponse({'approved': True}, safe=False)
+        except ObjectDoesNotExist:
+            pass
+        user.attempt += 1
+        user.save()
+        return JsonResponse({'approved': False}, safe=False)
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
-
 def index(request):
     return HttpResponse("Dit is een API")
-
 
 # Login
 def login(request):
@@ -32,11 +48,7 @@ def login(request):
             token = Token(token=generate_token(), user=user)
             token.save()
             response = {
-                            'user': {
-                                'email': user.email,
-                                'name': user.name,
-                                'distributor': user.distributor,
-                            },
+                            'user_id': user.pk,
                             'token': token.token
                         }
         except ObjectDoesNotExist:

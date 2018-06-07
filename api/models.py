@@ -6,6 +6,7 @@ class User(models.Model):
     name = models.CharField(max_length=25)
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
+    attempt = models.IntegerField(default=0)
 
     def __str__(self):
         return self.email
@@ -16,13 +17,13 @@ class User(models.Model):
             "name": self.name,
             "password": self.password,
             "distributer": self.distributor,
+            "attempt": self.attempt
         }
 
 class Token(models.Model):
     token = models.CharField(max_length=60);
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    attempt = models.IntegerField(default=0);
 
     def __str__(self):
         return str(self.user) + " : " + self.token
