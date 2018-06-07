@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import codecs
 import getpass
 import json
 import os

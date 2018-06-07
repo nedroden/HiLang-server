@@ -89,6 +89,22 @@ def create_course(request):
         return get_json_response(serializers.serialize('json', [course]))
 
 
+# Lessons
+def get_lesson(request, id):
+    exercise = list(Exercise.objects.filter(pk=id).values())
+    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+
+    return HttpResponse(json.dumps(exercise), content_type='application/json')
+
+
+def delete_lesson(request, id):
+    if request.method == 'DELETE':
+        lesson = Exercise.objects.get(pk=id)
+        lesson.delete(4)
+
+        return HttpResponse()
+
+
 # Languages
 def get_languages(request):
     return get_json_response(serializers.serialize('json', Language.objects.all()))
@@ -112,3 +128,19 @@ def get_user_subscriptions(request, user_id):
 
 def get_course_subscriptions(request, course_id):
     return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))
+
+
+# Favorite
+def add_favorite(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        Favorite.objects.create(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+    return get_json_response(request)
+
+
+def del_favorite(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+        entry.delete()
+    return get_json_response(request)

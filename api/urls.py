@@ -19,6 +19,10 @@ urlpatterns = [
     path('course/<int:course_id>/', views.get_course, name='course'),
     path('course/create/', views.create_course, name='create_course'),
 
+    # Lessons
+    path('lesson/<int:id>', views.get_lesson, name='lesson'),
+    path('lesson/<int:id>/delete', views.delete_lesson, name='lesson_delete'),
+
     # Languages
     path('languages/', views.get_languages, name='languages'),
     path('language/<int:language_id>/', views.get_lang_details, name="lang_details"),
@@ -26,6 +30,10 @@ urlpatterns = [
     # Subscriptions
     path('user/subscriptions/<int:user_id>/', views.get_user_subscriptions, name='user_subscriptions'),
     path('course/subscriptions/<int:course_id>/', views.get_course_subscriptions, name='course_subscriptions'),
+
+    # Favorite
+    path('course/favorite', views.add_favorite, name='favorite'),
+    path('course/unfavorite', views.del_favorite, name='unfavorite'),
 ]
 
 # integratie google, online woordenboek iets in die richting?
