@@ -87,6 +87,22 @@ def create_course(request):
         return get_json_response(serializers.serialize('json', [course]))
 
 
+# Lessons
+def get_lesson(request, id):
+    exercise = list(Exercise.objects.filter(pk=id).values())
+    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+
+    return HttpResponse(json.dumps(exercise), content_type='application/json')
+
+
+def delete_lesson(request, id):
+    if request.method == 'DELETE':
+        lesson = Exercise.objects.get(pk=id)
+        lesson.delete(4)
+
+        return HttpResponse()
+
+
 # Languages
 def get_languages(request):
     return get_json_response(serializers.serialize('json', Language.objects.all()))
