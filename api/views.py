@@ -79,10 +79,11 @@ def get_lesson(request, id):
 
 
 def delete_lesson(request, id):
-    lesson = Exercise.objects.get(pk=id)
-    lesson.delete(4)
+    if request.method == 'DELETE':
+        lesson = Exercise.objects.get(pk=id)
+        lesson.delete(4)
 
-    return HttpResponse()
+        return HttpResponse()
 
 
 # Languages
