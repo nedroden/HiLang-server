@@ -7,8 +7,8 @@ class User(models.Model):
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
 
-    def __str__(self):
-        return self.email
+    #def __str__(self):
+    #     return self.email
 
     def __repr__(self):
         return {
@@ -18,6 +18,17 @@ class User(models.Model):
             "distributer": self.distributor,
         }
 
+class Token(models.Model):
+    token = models.CharField(max_length=60);
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    attempt = models.IntegerField(default=0);
+
+    def __str__(self):
+        return self.token
+
+    def __repr__(self):
+        return {"token": self.token}
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
@@ -29,7 +40,7 @@ class Language(models.Model):
     def __repr__(self):
         return {
             "name": self.name,
-            "flag": self.flag
+            "flag": self.flag,
         }
 
 
@@ -58,6 +69,20 @@ class Course(models.Model):
 
 
 class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} : {}'.format(self.user, self.course)
+
+    def __repr__(self):
+        return {
+            "user": self.user,
+            "course": self.course,
+        }
+
+
+class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 

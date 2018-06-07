@@ -30,6 +30,10 @@ urlpatterns = [
     # Subscriptions
     path('user/subscriptions/<int:user_id>/', views.get_user_subscriptions, name='user_subscriptions'),
     path('course/subscriptions/<int:course_id>/', views.get_course_subscriptions, name='course_subscriptions'),
+
+    # Favorite
+    path('course/favorite', views.add_favorite, name='favorite'),
+    path('course/unfavorite', views.del_favorite, name='unfavorite'),
 ]
 
 # integratie google, online woordenboek iets in die richting?
