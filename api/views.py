@@ -105,7 +105,7 @@ def create_course(request):
 
 # Lessons
 def get_lesson(request, id):
-    exercise = list(Exercise.objects.filter(pk=id).values())
+    exercise = list(Lesson.objects.filter(pk=id).values())
     exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
 
     return HttpResponse(json.dumps(exercise), content_type='application/json')
@@ -113,10 +113,14 @@ def get_lesson(request, id):
 
 def delete_lesson(request, id):
     if request.method == 'DELETE':
-        lesson = Exercise.objects.get(pk=id)
+        lesson = Lesson.objects.get(pk=id)
         lesson.delete(4)
-
         return HttpResponse()
+
+
+def get_course_lessons(request, course_id):
+    exerciseData = Exercise.objects.filter(course_id=course_id)
+    return get_json_response(serializers.serialize('json', exerciseData))
 
 
 # Languages
