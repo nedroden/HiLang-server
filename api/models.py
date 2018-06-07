@@ -7,8 +7,8 @@ class User(models.Model):
     password = models.CharField(max_length=25)
     distributor = models.PositiveSmallIntegerField(default=0)
 
-    def __str__(self):
-        return self.email
+    #def __str__(self):
+    #     return self.email
 
     def __repr__(self):
         return {
@@ -18,6 +18,17 @@ class User(models.Model):
             "distributer": self.distributor,
         }
 
+class Token(models.Model):
+    token = models.CharField(max_length=60);
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    attempt = models.IntegerField(default=0);
+
+    def __str__(self):
+        return self.token
+
+    def __repr__(self):
+        return {"token": self.token}
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
@@ -29,7 +40,7 @@ class Language(models.Model):
     def __repr__(self):
         return {
             "name": self.name,
-            "flag": self.flag
+            "flag": self.flag,
         }
 
 
@@ -104,6 +115,12 @@ class Exercise(models.Model):
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
+
+    def delete(self, user_id):
+        user = User.objects.get(pk=user_id)
+
+        if self.course.user.id == user.id:
+            super().delete()
 
     def __str__(self):
         return '{} in {}'.format(self.name, self.course)
