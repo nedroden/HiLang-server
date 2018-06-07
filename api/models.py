@@ -71,6 +71,20 @@ class Subscription(models.Model):
         }
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} : {}'.format(self.user, self.course)
+
+    def __repr__(self):
+        return {
+            "user": self.user,
+            "course": self.course,
+        }
+
+
 class ExerciseType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()

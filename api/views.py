@@ -93,3 +93,19 @@ def get_user_subscriptions(request, user_id):
 
 def get_course_subscriptions(request, course_id):
     return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))
+
+
+# Favorite
+def add_favorite(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        Favorite.objects.create(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+    return get_json_response(request)
+
+
+def del_favorite(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+        entry.delete()
+    return get_json_response(request)
