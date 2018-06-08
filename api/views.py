@@ -119,10 +119,10 @@ def create_course(request):
 
 # Lessons
 def get_lesson(request, id):
-    exercise = list(Lesson.objects.filter(pk=id).values())
-    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+    lesson = list(Lesson.objects.filter(pk=id).values())
+    lesson[0]['vocabulary'] = list(WordListQuestion.objects.filter(lesson=id).values())
 
-    return HttpResponse(json.dumps(exercise), content_type='application/json')
+    return HttpResponse(json.dumps(lesson), content_type='application/json')
 
 
 def delete_lesson(request, id):
