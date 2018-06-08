@@ -54,7 +54,8 @@ class Course(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscribers = models.BigIntegerField(default=0)
     image = models.CharField(max_length=200, null=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
+    native_lang = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, related_name='native-language')
+    trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
     public = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
@@ -140,9 +141,9 @@ class Lesson(models.Model):
     def __repr__(self):
         return {
             "name": self.name,
+            "cat": self.category,
             "desc": self.description,
             "course": self.course,
-            "type": self.type,
         }
 
 

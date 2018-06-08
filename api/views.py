@@ -10,10 +10,12 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
+
 def generate_token():
     alphabet = string.ascii_letters + string.digits
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
+
 
 def validate_token(userId, token):
     try:
@@ -34,11 +36,13 @@ def validate_token(userId, token):
         user.save()
     return False
 
+
 def check_token(request, data=None):
     if (request.method == 'POST'):
         if (request.body):
             data = json.loads(request.body.decode('utf-8'))
             return JsonResponse({"approved": validate_token(data['user_id'], data['token'])}, safe=False)
+
 
 def destroy_token(request):
     if (request.method == 'POST'):
@@ -49,17 +53,21 @@ def destroy_token(request):
         except ObjectDoesNotExist:
             pass
 
+
 def destroy_user_tokens(user_id):
     user = User.objects.get(pk=user_id)
     user.attempt = 0
     user.save()
     Token.objects.filter(user=user).delete()
 
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
+
 def index(request):
     return HttpResponse("Dit is een API")
+
 
 # Login
 def login(request):
@@ -70,13 +78,15 @@ def login(request):
             token = Token(token=generate_token(), user=user)
             token.save()
             response = {
-                            'user_id': user.pk,
-                            'token': token.token
-                        }
+                'user_id': user.pk,
+                'token': token.token
+            }
         except ObjectDoesNotExist:
             response = {}
 
         return JsonResponse(response, safe=False)
+
+
 # Users
 def get_users(request):
     return get_json_response(serializers.serialize('json', User.objects.all()))
@@ -105,19 +115,27 @@ def get_courses(request):
 def get_course(request, course_id, user_id):
     courseData = Course.objects.get(id=course_id)
     authorData = User.objects.get(pk=user_id)
-    favoriteData = Favorite.objects.filter(user=authorData,course=Course.objects.get(pk=course_id))
+    favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
+    subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     if not favoriteData:
         favorite = False
     else:
         favorite = True
 
+    if not subscriptionData:
+        subscription = False
+    else:
+        subscription = True
+
     returnData = {
         'id': courseData.id,
         'name': courseData.name,
         'author': authorData.name,
+        'authorId': courseData.user.pk,
         'description': courseData.description,
         'image': courseData.image,
-        'favorite': favorite
+        'favorite': favorite,
+        'subscription': subscription
     }
     return JsonResponse(returnData)
 
@@ -139,6 +157,41 @@ def create_course(request):
         return get_json_response(serializers.serialize('json', [course]))
 
 
+def get_user_courses(request, user_id):
+    courseData = Course.objects.filter(user=User.objects.get(pk=user_id))
+    return get_json_response(serializers.serialize('json', courseData))
+
+
+def edit_course_desc(request, course_id):
+    course = Course.objects.get(pk=course_id)
+    data = json.loads(request.body.decode('utf-8'))
+    course.description = data['desc']
+    course.save()
+    return HttpResponse(request)
+
+
+def search_courses(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        courseData = Course.objects.filter(name__icontains=data['name'], public=1)
+        returnData = []
+        for course in courseData:
+            author = course.user
+            returnData.append(
+                {
+                    "id": course.id,
+                    "name": course.name,
+                    "description": course.description,
+                    "image": course.image,
+                    "subscribers": course.subscribers,
+                    "author": author.name
+                }
+            )
+        return JsonResponse(returnData, safe=False)
+
+
+# Lessons
+
 def create_lesson(request, course_id):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
@@ -155,12 +208,11 @@ def create_lesson(request, course_id):
         return get_json_response(serializers.serialize('json', [lesson]))
 
 
-# Lessons
 def get_lesson(request, id):
-    exercise = list(Lesson.objects.filter(pk=id).values())
-    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+    lesson = list(Lesson.objects.filter(pk=id).values())
+    lesson[0]['vocabulary'] = list(WordListQuestion.objects.filter(lesson=id).values())
 
-    return HttpResponse(json.dumps(exercise), content_type='application/json')
+    return HttpResponse(json.dumps(lesson), content_type='application/json')
 
 
 def delete_lesson(request, id):
@@ -169,9 +221,32 @@ def delete_lesson(request, id):
         lesson.delete(4)
         return HttpResponse()
 
+
 def get_course_lessons(request, course_id):
-    exerciseData = Exercise.objects.filter(course_id=course_id)
-    return get_json_response(serializers.serialize('json', exerciseData))
+    lessonData = Lesson.objects.filter(course_id=course_id)
+    return get_json_response(serializers.serialize('json', lessonData))
+
+
+def get_lesson_det(request, id):
+    lessonData = Lesson.objects.get(pk=id)
+    returnData = {
+        "id": lessonData.id,
+        "name": lessonData.name,
+        "cat": lessonData.category,
+        "desc": lessonData.description,
+        "native": lessonData.native_lang_id,
+        "translation": lessonData.trans_lang_id
+    }
+    return JsonResponse(returnData)
+
+
+def edit_lesson_desc(request, lesson_id):
+    lesson = Lesson.objects.get(pk=lesson_id)
+    data = json.loads(request.body.decode('utf-8'))
+    lesson.description = data['desc']
+    lesson.save()
+    return HttpResponse(request)
+
 
 # Languages
 def get_languages(request):
@@ -198,6 +273,23 @@ def get_course_subscriptions(request, course_id):
     return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))
 
 
+def subscribe(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        Subscription.objects.create(user=User.objects.get(pk=data['user']),
+                                    course=Course.objects.get(pk=data['course']))
+    return get_json_response(request)
+
+
+def unsubscribe(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        entry = Subscription.objects.filter(user=User.objects.get(pk=data['user']),
+                                            course=Course.objects.get(pk=data['course']))
+        entry.delete()
+    return get_json_response(request)
+
+
 # Favorite
 def add_favorite(request):
     if request.method == 'POST':
@@ -209,9 +301,11 @@ def add_favorite(request):
 def del_favorite(request):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
-        entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+        entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']),
+                                        course=Course.objects.get(pk=data['course']))
         entry.delete()
     return get_json_response(request)
+
 
 def get_user_favorites(request, user_id):
     favoriteData = serializers.serialize('json', Favorite.objects.filter(user=User.objects.get(pk=user_id)))
