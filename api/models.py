@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class User(models.Model):
     email = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=25)
@@ -20,8 +21,9 @@ class User(models.Model):
             "attempt": self.attempt
         }
 
+
 class Token(models.Model):
-    token = models.CharField(max_length=60);
+    token = models.CharField(max_length=60)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_datetime = models.DateTimeField(auto_now_add=True)
 
@@ -30,6 +32,7 @@ class Token(models.Model):
 
     def __repr__(self):
         return {"token": self.token}
+
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
@@ -51,7 +54,8 @@ class Course(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscribers = models.BigIntegerField(default=0)
     image = models.CharField(max_length=200, null=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
+    native_lang = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, related_name='native')
+    trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
     public = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
@@ -62,10 +66,10 @@ class Course(models.Model):
             "name": self.name,
             "desc": self.description,
             "user": self.user,
-            "lang": self.language,
+            "lang": self.native_lang,
             "subs": self.subscribers,
-            "img":  self.image,
-            "pub":  self.public,
+            "img": self.image,
+            "pub": self.public,
         }
 
 
@@ -96,6 +100,8 @@ class Favorite(models.Model):
             "course": self.course,
         }
 
+
+# All types of exercises: Flashcards etc.
 class LessonType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
@@ -109,24 +115,18 @@ class LessonType(models.Model):
             "desc": self.description,
         }
 
+
 class Lesson(models.Model):
     name = models.CharField(max_length=30)
     category = models.CharField(max_length=30, null=True)
     description = models.TextField(null=True)
+    grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    native_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='native')
-    trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
 
-        if self.course.user.id == user.id:
-            super().delete()
-
-    def delete(self, user_id):
-        user = User.objects.get(pk=user_id)
-
-        if self.course.user.id == user.id:
+        if self.course.user == user.id:
             super().delete()
 
     def __str__(self):
