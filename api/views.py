@@ -79,6 +79,7 @@ def get_course(request, course_id, user_id):
         'id': courseData.id,
         'name': courseData.name,
         'author': authorData.name,
+        'authorId': courseData.user.pk,
         'description': courseData.description,
         'image': courseData.image,
         'favorite': favorite
@@ -103,12 +104,25 @@ def create_course(request):
         return get_json_response(serializers.serialize('json', [course]))
 
 
+def get_user_courses(request, user_id):
+    courseData = Course.objects.filter(user=User.objects.get(pk=user_id))
+    return get_json_response(serializers.serialize('json', courseData))
+
+
+def edit_course_desc(request, course_id):
+    course = Course.objects.get(pk=course_id)
+    data = json.loads(request.body.decode('utf-8'))
+    course.description = data['desc']
+    course.save()
+    return HttpResponse(request)
+
+
 # Lessons
 def get_lesson(request, id):
-    exercise = list(Lesson.objects.filter(pk=id).values())
-    exercise[0]['vocabulary'] = list(WordListQuestion.objects.filter(exercise=id).values())
+    lesson = list(Lesson.objects.filter(pk=id).values())
+    lesson[0]['vocabulary'] = list(WordListQuestion.objects.filter(lesson=id).values())
 
-    return HttpResponse(json.dumps(exercise), content_type='application/json')
+    return HttpResponse(json.dumps(lesson), content_type='application/json')
 
 
 def delete_lesson(request, id):
@@ -119,8 +133,29 @@ def delete_lesson(request, id):
 
 
 def get_course_lessons(request, course_id):
-    exerciseData = Exercise.objects.filter(course_id=course_id)
-    return get_json_response(serializers.serialize('json', exerciseData))
+    lessonData = Lesson.objects.filter(course_id=course_id)
+    return get_json_response(serializers.serialize('json', lessonData))
+
+
+def get_lesson_det(request, id):
+    lessonData = Lesson.objects.get(pk=id)
+    returnData = {
+        "id": lessonData.id,
+        "name": lessonData.name,
+        "cat": lessonData.category,
+        "desc": lessonData.description,
+        "native": lessonData.native_lang_id,
+        "translation": lessonData.trans_lang_id
+    }
+    return JsonResponse(returnData)
+
+
+def edit_lesson_desc(request, lesson_id):
+    lesson = Lesson.objects.get(pk=lesson_id)
+    data = json.loads(request.body.decode('utf-8'))
+    lesson.description = data['desc']
+    lesson.save()
+    return HttpResponse(request)
 
 
 # Languages
