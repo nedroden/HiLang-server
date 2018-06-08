@@ -23,7 +23,7 @@ class User(models.Model):
 
 
 class Token(models.Model):
-    token = models.CharField(max_length=60);
+    token = models.CharField(max_length=60)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_datetime = models.DateTimeField(auto_now_add=True)
 
@@ -54,7 +54,7 @@ class Course(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscribers = models.BigIntegerField(default=0)
     image = models.CharField(max_length=200, null=True)
-    native_lang = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, related_name='native-language')
+    native_lang = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, related_name='native')
     trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
     public = models.PositiveSmallIntegerField(default=0)
 
@@ -66,7 +66,7 @@ class Course(models.Model):
             "name": self.name,
             "desc": self.description,
             "user": self.user,
-            "lang": self.language,
+            "lang": self.native_lang,
             "subs": self.subscribers,
             "img": self.image,
             "pub": self.public,
@@ -126,13 +126,7 @@ class Lesson(models.Model):
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
 
-        if self.course.user.id == user.id:
-            super().delete()
-
-    def delete(self, user_id):
-        user = User.objects.get(pk=user_id)
-
-        if self.course.user.id == user.id:
+        if self.course.user == user.id:
             super().delete()
 
     def __str__(self):
