@@ -15,13 +15,29 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
+def check_token(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        try:
+            user = User.objects.get(pk=data['hl_user_id'])
+            userTokens = Token.objects.filter(user=user)
+            for token in userTokens:
+                if (token.token == data['hl_token']):
+                    if (user.attempt > 0):
+                        user.attempt = 0
+                        user.save()
+                    return JsonResponse({'approved': True}, safe=False)
+        except ObjectDoesNotExist:
+            pass
+        user.attempt += 1
+        user.save()
+        return JsonResponse({'approved': False}, safe=False)
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
-
 def index(request):
     return HttpResponse("Dit is een API")
-
 
 # Login
 def login(request):
@@ -32,11 +48,7 @@ def login(request):
             token = Token(token=generate_token(), user=user)
             token.save()
             response = {
-                            'user': {
-                                'email': user.email,
-                                'name': user.name,
-                                'distributor': user.distributor,
-                            },
+                            'user_id': user.pk,
                             'token': token.token
                         }
         except ObjectDoesNotExist:
@@ -119,12 +131,10 @@ def delete_lesson(request, id):
         lesson.delete(4)
         return HttpResponse()
 
-
 def get_course_lessons(request, course_id):
     exerciseData = Exercise.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', exerciseData))
-
-
+  
 # Languages
 def get_languages(request):
     return get_json_response(serializers.serialize('json', Language.objects.all()))
@@ -164,7 +174,6 @@ def del_favorite(request):
         entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
         entry.delete()
     return get_json_response(request)
-
 
 def get_user_favorites(request, user_id):
     favoriteData = serializers.serialize('json', Favorite.objects.filter(user=User.objects.get(pk=user_id)))

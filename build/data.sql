@@ -5,6 +5,7 @@ INSERT INTO `api_course` (`id`, `name`, `description`, `language_id`, `user_id`,
 (2, 'French for beginners', 'Learn to speak French properly', 4, 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420),
 (3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337);
 
+
 INSERT INTO `api_lesson` (`id`, `name`, `category`, `description`, `course_id`, `type_id`) VALUES
 (1, 'English lesson 1', 'Food', 'In this lesson you will learn absolutly nothing', 1, 1),
 (2, 'English lesson 2', 'Health', 'In this lesson you will learn ...', 1, 2),
