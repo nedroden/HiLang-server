@@ -3,7 +3,7 @@
 INSERT INTO `api_course` (`id`, `name`, `description`, `language_id`, `user_id`, `image`, `subscribers`, `public`) VALUES
 (1, 'English for beginners', 'Learn to write English properly.', 1, 1, 'http://www.linguapaths.com/wp-content/uploads/2016/09/regular-english-course-valencia.jpg', 69,0),
 (2, 'French for beginners', 'Learn to speak French properly', 4, 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420,0),
-(3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,0);
+(3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,0),
 (4, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,0);
 
 
@@ -45,12 +45,12 @@ INSERT INTO `api_favorite` (`id`, `course_id`, `user_id`) VALUES
 (3,1,3),
 (4,3,1);
 
-INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`) VALUES
-(1, 'piet@hotmail.com', 'piet', 'welkom123', 0),
-(2, 'jan@hotmail.com', 'jan', 'welkom123', 1),
-(3, 'peter@hotmail.com', 'peter', 'welkom123', 0),
-(4, 'sara@hotmail.com', 'sara', 'welkom123', 1),
-(5, 'evert@hotmail.com', 'evert', 'welkom123', 0);
+INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`,`attempt`) VALUES
+(1, 'piet@hotmail.com', 'piet', 'welkom123', 0,0),
+(2, 'jan@hotmail.com', 'jan', 'welkom123', 1,0),
+(3, 'peter@hotmail.com', 'peter', 'welkom123', 0,0),
+(4, 'sara@hotmail.com', 'sara', 'welkom123', 1,0),
+(5, 'evert@hotmail.com', 'evert', 'welkom123', 0,0);
 
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
