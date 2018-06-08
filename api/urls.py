@@ -7,6 +7,9 @@ urlpatterns = [
     # Login
     path('login', views.login, name='login'),
 
+    # Tokens
+    path('checkToken', views.check_token, name='checkToken'),
+
     # Users
     path('users/',views.get_users, name='users'),
     path('user/<int:user_id>/', views.get_user, name='user'),
