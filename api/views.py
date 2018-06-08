@@ -97,12 +97,28 @@ def get_course_lang(request, language_id):
 
 
 def create_course(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         user = User.objects.get(pk=data['user'])
         course = Course(name=data['name'], user=user)
         course.save()
         return get_json_response(serializers.serialize('json', [course]))
+
+
+def create_lesson(request, course_id):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        course = Course.objects.get(pk=course_id)
+        lesson = Lesson(name=data['title'],
+                        category=data['category'],
+                        description=data['description'],
+                        grammar=data['grammar'],
+                        course=course)
+        lesson.save()
+        for question, answer in data['words'].items():
+            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
+            entry.save()
+        return get_json_response(serializers.serialize('json', [lesson]))
 
 
 # Lessons
@@ -152,14 +168,14 @@ def get_course_subscriptions(request, course_id):
 
 # Favorite
 def add_favorite(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         Favorite.objects.create(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
     return get_json_response(request)
 
 
 def del_favorite(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
         entry.delete()

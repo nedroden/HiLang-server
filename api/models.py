@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class User(models.Model):
     email = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=25)
@@ -18,6 +19,7 @@ class User(models.Model):
             "distributer": self.distributor,
         }
 
+
 class Token(models.Model):
     token = models.CharField(max_length=60);
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -29,6 +31,7 @@ class Token(models.Model):
 
     def __repr__(self):
         return {"token": self.token}
+
 
 class Language(models.Model):
     name = models.CharField(max_length=20)
@@ -63,8 +66,8 @@ class Course(models.Model):
             "user": self.user,
             "lang": self.language,
             "subs": self.subscribers,
-            "img":  self.image,
-            "pub":  self.public,
+            "img": self.image,
+            "pub": self.public,
         }
 
 
@@ -96,6 +99,7 @@ class Favorite(models.Model):
         }
 
 
+# All types of exercises: Flashcards etc.
 class LessonType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
@@ -114,8 +118,8 @@ class Lesson(models.Model):
     name = models.CharField(max_length=30)
     category = models.CharField(max_length=30, null=True)
     description = models.TextField(null=True)
+    grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type = models.ForeignKey(LessonType, on_delete=models.CASCADE)
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
