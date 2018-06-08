@@ -70,10 +70,16 @@ def get_course(request, course_id, user_id):
     courseData = Course.objects.get(id=course_id)
     authorData = User.objects.get(pk=user_id)
     favoriteData = Favorite.objects.filter(user=authorData,course=Course.objects.get(pk=course_id))
+    subscriptionData = Subscription.objects.filter(user=authorData,course=Course.objects.get(pk=course_id))
     if not favoriteData:
         favorite = False
     else:
         favorite = True
+
+    if not subscriptionData:
+        subscription = False
+    else:
+        subscription = True
 
     returnData = {
         'id': courseData.id,
@@ -82,7 +88,8 @@ def get_course(request, course_id, user_id):
         'authorId': courseData.user.pk,
         'description': courseData.description,
         'image': courseData.image,
-        'favorite': favorite
+        'favorite': favorite,
+        'subscription': subscription
     }
     return JsonResponse(returnData)
 
@@ -115,6 +122,26 @@ def edit_course_desc(request, course_id):
     course.description = data['desc']
     course.save()
     return HttpResponse(request)
+
+
+def search_courses(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        courseData = Course.objects.filter(name__icontains=data['name'], public=1)
+        returnData = []
+        for course in courseData:
+            author = course.user
+            returnData.append(
+                {
+                    "id": course.id,
+                    "name": course.name,
+                    "description": course.description,
+                    "image": course.image,
+                    "subscribers": course.subscribers,
+                    "author": author.name
+                }
+            )
+        return JsonResponse(returnData, safe=False)
 
 
 # Lessons
@@ -181,6 +208,22 @@ def get_user_subscriptions(request, user_id):
 
 def get_course_subscriptions(request, course_id):
     return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))
+
+
+def subscribe(request):
+    if(request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        Subscription.objects.create(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+    return get_json_response(request)
+
+
+def unsubscribe(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        entry = Subscription.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
+        entry.delete()
+    return get_json_response(request)
+
 
 
 # Favorite

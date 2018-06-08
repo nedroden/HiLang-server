@@ -20,6 +20,7 @@ urlpatterns = [
     path('course/<int:user_id>/<int:course_id>/', views.get_course, name='course'),
     path('course/create/', views.create_course, name='create_course'),
     path('course/<int:course_id>/edit_desc', views.edit_course_desc, name='edit_course_desc'),
+    path('course/search', views.search_courses,name="search_courses"),
 
     # Lessons
     path('lesson/<int:id>', views.get_lesson, name='lesson'),
@@ -35,6 +36,8 @@ urlpatterns = [
     # Subscriptions
     path('user/subscriptions/<int:user_id>/', views.get_user_subscriptions, name='user_subscriptions'),
     path('course/subscriptions/<int:course_id>/', views.get_course_subscriptions, name='course_subscriptions'),
+    path('course/subscribe', views.subscribe, name="subscribe"),
+    path('course/unsubscribe', views.unsubscribe, name="unsubscribe"),
 
     # Favorite
     path('course/favorite', views.add_favorite, name='favorite'),
