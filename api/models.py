@@ -96,8 +96,7 @@ class Favorite(models.Model):
             "course": self.course,
         }
 
-
-class ExerciseType(models.Model):
+class LessonType(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
 
@@ -110,12 +109,18 @@ class ExerciseType(models.Model):
             "desc": self.description,
         }
 
-
-class Exercise(models.Model):
+class Lesson(models.Model):
     name = models.CharField(max_length=30)
+    category = models.CharField(max_length=30, null=True)
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
+    type = models.ForeignKey(LessonType, on_delete=models.CASCADE)
+
+    def delete(self, user_id):
+        user = User.objects.get(pk=user_id)
+
+        if self.course.user.id == user.id:
+            super().delete()
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
@@ -138,13 +143,13 @@ class Exercise(models.Model):
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE)
 
     def __repr__(self):
         return {
             "native": self.native,
             "translation": self.translation,
-            "exercise": self.exercise,
+            "lesson": self.lesson,
         }
 
 
@@ -152,7 +157,7 @@ class SentenceStructureQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
     correctOrder = models.CharField(max_length=20)
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE)
     description = models.TextField(null=True)
 
     def __repr__(self):
@@ -160,7 +165,7 @@ class SentenceStructureQuestion(models.Model):
             "native": self.native,
             "translation": self.translation,
             "correctOrder": self.correctOrder,
-            "exercise": self.exercise,
+            "lesson": self.lesson,
             "desc": self.description,
         }
 

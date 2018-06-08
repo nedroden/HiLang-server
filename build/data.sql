@@ -5,18 +5,19 @@ INSERT INTO `api_course` (`id`, `name`, `description`, `language_id`, `user_id`,
 (2, 'French for beginners', 'Learn to speak French properly', 4, 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420),
 (3, 'German for beginners', 'Learn to write Germam properly', 3, 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337);
 
-INSERT INTO `api_exercise` (`id`, `name`, `description`, `course_id`, `type_id`) VALUES
-(1, 'English lesson 1', 'Food', 1, 1),
-(2, 'English lesson 2', 'Health', 1, 2),
-(3, 'English lesson 3', 'Sports', 1, 3),
-(4, 'German lesson 1', 'Basics', 2, 1),
-(5, 'German lesson 2', 'Health', 2, 2),
-(6, 'German lesson 3', 'Sports', 3, 3),
-(7, 'French lesson 1', 'Basics', 3, 1),
-(8, 'French lesson 2', 'Health', 3, 2),
-(9, 'French lesson 3', 'Sports', 3, 3);
 
-INSERT INTO `api_exercisetype` (`id`, `name`, `description`) VALUES
+INSERT INTO `api_lesson` (`id`, `name`, `category`, `description`, `course_id`, `type_id`) VALUES
+(1, 'English lesson 1', 'Food', 'In this lesson you will learn absolutly nothing', 1, 1),
+(2, 'English lesson 2', 'Health', 'In this lesson you will learn ...', 1, 2),
+(3, 'English lesson 3', 'Sports', 'In this lesson you will learn ...', 1, 3),
+(4, 'German lesson 1', 'Basics', 'In this lesson you will learn ...', 2, 1),
+(5, 'German lesson 2', 'Health', 'In this lesson you will learn ...', 2, 2),
+(6, 'German lesson 3', 'Sports', 'In this lesson you will learn ...', 3, 3),
+(7, 'French lesson 1', 'Basics', 'In this lesson you will learn ...', 3, 1),
+(8, 'French lesson 2', 'Health', 'In this lesson you will learn ...', 3, 2),
+(9, 'French lesson 3', 'Sports', 'In this lesson you will learn ...', 3, 3);
+
+INSERT INTO `api_lessontype` (`id`, `name`, `description`) VALUES
 (1, 'Grammar', 'Learn grammar'),
 (2, 'Flashcards', 'Learn with flashcards'),
 (3, 'Completion', 'Learn with completion exercises');
