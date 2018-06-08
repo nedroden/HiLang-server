@@ -194,6 +194,7 @@ def delete_lesson(request, id):
         lesson.delete(4)
         return HttpResponse()
 
+
 def get_course_lessons(request, course_id):
     lessonData = Lesson.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', lessonData))
@@ -218,6 +219,7 @@ def edit_lesson_desc(request, lesson_id):
     lesson.description = data['desc']
     lesson.save()
     return HttpResponse(request)
+
 
 # Languages
 def get_languages(request):
