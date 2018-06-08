@@ -15,23 +15,45 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
-def check_token(request):
+def validate_token(userId, token):
+    try:
+        user = User.objects.get(pk=userId)
+        userTokens = Token.objects.filter(user=user)
+        for token in userTokens:
+            if (token.token == token):
+                if (user.attempt > 0):
+                    user.attempt = 0
+                    user.save()
+                return JsonResponse({'approved': True}, safe=False)
+    except ObjectDoesNotExist:
+        return False
+    user.attempt += 1
+    if (user.attempt >= 5):
+        destroy_user_tokens(user)
+    else:
+        user.save()
+    return False
+
+def check_token(request, data=None):
+    if (request.method == 'POST'):
+        if (request.body):
+            data = json.loads(request.body.decode('utf-8'))
+            return JsonResponse({"approved": validate_token(data['user_id'], data['token'])}, safe=False)
+
+def destroy_token(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         try:
-            user = User.objects.get(pk=data['hl_user_id'])
-            userTokens = Token.objects.filter(user=user)
-            for token in userTokens:
-                if (token.token == data['hl_token']):
-                    if (user.attempt > 0):
-                        user.attempt = 0
-                        user.save()
-                    return JsonResponse({'approved': True}, safe=False)
+            user = User.objects.get(pk=data['user_id'])
+            token = Token.objects.get(token=data['token'], user=user).delete()
         except ObjectDoesNotExist:
             pass
-        user.attempt += 1
-        user.save()
-        return JsonResponse({'approved': False}, safe=False)
+
+def destroy_user_tokens(user_id):
+    user = User.objects.get(pk=user_id)
+    user.attempt = 0
+    user.save()
+    Token.objects.filter(user=user).delete()
 
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
@@ -150,7 +172,7 @@ def delete_lesson(request, id):
 def get_course_lessons(request, course_id):
     exerciseData = Exercise.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', exerciseData))
-  
+
 # Languages
 def get_languages(request):
     return get_json_response(serializers.serialize('json', Language.objects.all()))
