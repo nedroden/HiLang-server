@@ -229,13 +229,16 @@ def get_course_lessons(request, course_id):
 
 def get_lesson_det(request, id):
     lessonData = Lesson.objects.get(pk=id)
+    courseData = Course.objects.get(pk=lessonData.course_id)
+    nativeData = Language.objects.get(pk=courseData.native_lang.id)
+    transData = Language.objects.get(pk=courseData.trans_lang.id)
     returnData = {
         "id": lessonData.id,
         "name": lessonData.name,
         "cat": lessonData.category,
         "desc": lessonData.description,
-        "native": lessonData.native_lang_id,
-        "translation": lessonData.trans_lang_id
+        "native": nativeData.name,
+        "trans": transData.name
     }
     return JsonResponse(returnData)
 
