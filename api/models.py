@@ -114,7 +114,8 @@ class Lesson(models.Model):
     category = models.CharField(max_length=30, null=True)
     description = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type = models.ForeignKey(LessonType, on_delete=models.CASCADE)
+    native_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='native')
+    trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
@@ -134,9 +135,9 @@ class Lesson(models.Model):
     def __repr__(self):
         return {
             "name": self.name,
+            "cat": self.category,
             "desc": self.description,
             "course": self.course,
-            "type": self.type,
         }
 
 
