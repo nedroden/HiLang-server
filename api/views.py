@@ -7,6 +7,7 @@ import json
 import string
 import random
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
 def generate_token():
@@ -14,33 +15,68 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
+def validate_token(userId, token):
+    try:
+        user = User.objects.get(pk=userId)
+        userTokens = Token.objects.filter(user=user)
+        for token in userTokens:
+            if (token.token == token):
+                if (user.attempt > 0):
+                    user.attempt = 0
+                    user.save()
+                return JsonResponse({'approved': True}, safe=False)
+    except ObjectDoesNotExist:
+        return False
+    user.attempt += 1
+    if (user.attempt >= 5):
+        destroy_user_tokens(user)
+    else:
+        user.save()
+    return False
+
+def check_token(request, data=None):
+    if (request.method == 'POST'):
+        if (request.body):
+            data = json.loads(request.body.decode('utf-8'))
+            return JsonResponse({"approved": validate_token(data['user_id'], data['token'])}, safe=False)
+
+def destroy_token(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        try:
+            user = User.objects.get(pk=data['user_id'])
+            token = Token.objects.get(token=data['token'], user=user).delete()
+        except ObjectDoesNotExist:
+            pass
+
+def destroy_user_tokens(user_id):
+    user = User.objects.get(pk=user_id)
+    user.attempt = 0
+    user.save()
+    Token.objects.filter(user=user).delete()
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
-
 def index(request):
     return HttpResponse("Dit is een API")
-
 
 # Login
 def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
-        user = User.objects.get(email=data['email'], password=data['password'])
-        token = Token(token=generate_token(), user=User.objects.get(pk=1))
-        token.save()
-        return JsonResponse({'user': {'email': user.email,
-                                      'name': user.name,
-                                      'distributor': user.distributor,},
-                             'token': token.token}, safe=False)
-        # token = Token(token=generate_token(), user=user)
-        # token.save()
-        # #returnData = [user, repr(token)]
-        # returnData = {'user': user,
-        #               'token': token}
-        # return get_json_response(serializers.serialize('json', json.dumps(returnData)))
-        #return get_json_response(serializers.serialize('json', [user]))
+        try:
+            user = User.objects.get(email=data['email'], password=data['password'])
+            token = Token(token=generate_token(), user=user)
+            token.save()
+            response = {
+                            'user_id': user.pk,
+                            'token': token.token
+                        }
+        except ObjectDoesNotExist:
+            response = {}
 
+        return JsonResponse(response, safe=False)
 # Users
 def get_users(request):
     return get_json_response(serializers.serialize('json', User.objects.all()))
@@ -158,7 +194,6 @@ def delete_lesson(request, id):
         lesson.delete(4)
         return HttpResponse()
 
-
 def get_course_lessons(request, course_id):
     lessonData = Lesson.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', lessonData))
@@ -183,7 +218,6 @@ def edit_lesson_desc(request, lesson_id):
     lesson.description = data['desc']
     lesson.save()
     return HttpResponse(request)
-
 
 # Languages
 def get_languages(request):
@@ -240,7 +274,6 @@ def del_favorite(request):
         entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
         entry.delete()
     return get_json_response(request)
-
 
 def get_user_favorites(request, user_id):
     favoriteData = serializers.serialize('json', Favorite.objects.filter(user=User.objects.get(pk=user_id)))
