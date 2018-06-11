@@ -68,7 +68,7 @@ def import_tables(connection, info):
 
     result = True
     try:
-        with open('data.sql') as file:
+        with codecs.open('data.sql', encoding='utf-8') as file:
             current_statement = ''
 
             for line in file:
