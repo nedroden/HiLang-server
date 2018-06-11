@@ -12,6 +12,10 @@ from api.models import *
 
 def index(request):
     return HttpResponse("Dit is een API")
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 
 def generate_token():
     alphabet = string.ascii_letters + string.digits
@@ -73,11 +77,16 @@ def destroy_user_tokens(user_id):
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 # Login
 def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         try:
+            print(data)
             user = User.objects.get(email=data['email'], password=data['password'])
             token = Token(token=generate_token(), user=user)
             token.save()
