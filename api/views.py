@@ -2,7 +2,7 @@ import json
 from django.core import serializers
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 import json
 import string
 import random
@@ -74,6 +74,7 @@ def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         try:
+            print(data)
             user = User.objects.get(email=data['email'], password=data['password'])
             token = Token(token=generate_token(), user=user)
             token.save()
