@@ -1,8 +1,8 @@
 import json
 from django.core import serializers
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth import authenticate
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
+from django.contrib.auth import authenticate, login
 import json
 import string
 import random
@@ -10,6 +10,8 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
+def index(request):
+    return HttpResponse("Dit is een API")
 
 def generate_token():
     alphabet = string.ascii_letters + string.digits
@@ -21,27 +23,34 @@ def validate_token(userId, token):
     try:
         user = User.objects.get(pk=userId)
         userTokens = Token.objects.filter(user=user)
-        for token in userTokens:
-            if (token.token == token):
+        for userToken in userTokens:
+            if (userToken.token == token):
                 if (user.attempt > 0):
                     user.attempt = 0
                     user.save()
-                return JsonResponse({'approved': True}, safe=False)
+                return True
     except ObjectDoesNotExist:
         return False
     user.attempt += 1
     if (user.attempt >= 5):
-        destroy_user_tokens(user)
+        destroy_user_tokens(userId)
     else:
         user.save()
     return False
 
+def parse_params(request):
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        if (validate_token(data['user_id', 'token'])):
+            return data['params']
+    return None
 
-def check_token(request, data=None):
+def check_token(request):
     if (request.method == 'POST'):
         if (request.body):
             data = json.loads(request.body.decode('utf-8'))
-            return JsonResponse({"approved": validate_token(data['user_id'], data['token'])}, safe=False)
+            return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
+    return JsonResponse({'approved': False}, safe=False)
 
 
 def destroy_token(request):
@@ -65,10 +74,6 @@ def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
 
-def index(request):
-    return HttpResponse("Dit is een API")
-
-
 # Login
 def login(request):
     if (request.method == 'POST'):
@@ -79,23 +84,20 @@ def login(request):
             token = Token(token=generate_token(), user=user)
             token.save()
             response = {
-                'user_id': user.pk,
-                'token': token.token
-            }
+                        'user_id': user.pk,
+                        'token': token.token
+                        }
+            return JsonResponse(response, safe=False)
         except ObjectDoesNotExist:
-            response = {}
-
-        return JsonResponse(response, safe=False)
-
+            pass
+    return JsonResponse({}, safe=False)
 
 # Users
 def get_users(request):
     return get_json_response(serializers.serialize('json', User.objects.all()))
 
-
 def get_user(request, user_id):
     return get_json_response(serializers.serialize('json', User.objects.filter(id=user_id)))
-
 
 def create_user(request):
     if (request.method == 'POST'):
@@ -110,6 +112,9 @@ def create_user(request):
 
 # Courses
 def get_courses(request):
+    # data = parse_params(request);
+    # if (data == None):
+    #     return HttpResponseForbidden();
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
 
