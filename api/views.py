@@ -6,12 +6,15 @@ from django.contrib.auth import authenticate, login
 import json
 import string
 import random
+import pprint
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
+
 def index(request):
     return HttpResponse("Dit is een API")
+
 
 def generate_token():
     alphabet = string.ascii_letters + string.digits
@@ -38,12 +41,14 @@ def validate_token(userId, token):
         user.save()
     return False
 
+
 def parse_params(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         if (validate_token(data['user_id', 'token'])):
             return data['params']
     return None
+
 
 def check_token(request):
     if (request.method == 'POST'):
@@ -79,7 +84,6 @@ def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         try:
-            print(data)
             user = User.objects.get(email=data['email'], password=data['password'])
             token = Token(token=generate_token(), user=user)
             token.save()
@@ -92,12 +96,15 @@ def login(request):
             pass
     return JsonResponse({}, safe=False)
 
+
 # Users
 def get_users(request):
     return get_json_response(serializers.serialize('json', User.objects.all()))
 
+
 def get_user(request, user_id):
     return get_json_response(serializers.serialize('json', User.objects.filter(id=user_id)))
+
 
 def create_user(request):
     if (request.method == 'POST'):
@@ -179,38 +186,59 @@ def edit_course_desc(request, course_id):
 def search_courses(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
-        courseData = Course.objects.filter(name__icontains=data['name'], public=1)
+        list1 = Course.objects.filter(name__icontains=data['name'], public=1)
+        list2 = Course.objects.filter(description__icontains=data['name'], public=1)
+        courseData = list1 | list2
         returnData = []
         for course in courseData:
             author = course.user
-            returnData.append(
-                {
-                    "id": course.id,
-                    "name": course.name,
-                    "description": course.description,
-                    "image": course.image,
-                    "subscribers": course.subscribers,
-                    "author": author.name
-                }
-            )
+            unique = True
+            for returnCourse in returnData:
+                if course.id == returnCourse['id']:
+                    unique = False
+            if unique:
+                returnData.append(
+                    {
+                        "id": course.id,
+                        "name": course.name,
+                        "description": course.description,
+                        "image": course.image,
+                        "subscribers": course.subscribers,
+                        "author": author.name
+                    }
+                )
         return JsonResponse(returnData, safe=False)
 
 
 # Lessons
-
 def create_lesson(request, course_id):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         course = Course.objects.get(pk=course_id)
-        lesson = Lesson(name=data['title'],
-                        category=data['category'],
-                        description=data['description'],
-                        grammar=data['grammar'],
-                        course=course)
-        lesson.save()
-        for question, answer in data['words'].items():
-            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
-            entry.save()
+        if Lesson.objects.get(pk=data['id']) == None:
+            lesson = Lesson(name=data['title'],
+                            category=data['category'],
+                            description=data['description'],
+                            grammar=data['grammar'],
+                            course=course)
+            lesson.save()
+            for question, answer in data['words'].items():
+                entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
+                entry.save()
+        else:
+            lesson = Lesson.objects.get(pk=data['id'])
+            lesson.name = data['title']
+            lesson.category = data['category']
+            lesson.description = data['description']
+            lesson.grammar = data['grammar']
+            lesson.save()
+
+            listData = WordListQuestion.objects.filter(lesson=lesson)
+            listData.delete()
+
+            for question, answer in data['words'].items():
+                entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
+                entry.save()
         return get_json_response(serializers.serialize('json', [lesson]))
 
 
@@ -224,7 +252,7 @@ def get_lesson(request, id):
 def delete_lesson(request, id):
     if request.method == 'DELETE':
         lesson = Lesson.objects.get(pk=id)
-        lesson.delete(4)
+        lesson.delete(id)
         return HttpResponse()
 
 
@@ -243,6 +271,7 @@ def get_lesson_det(request, id):
         "name": lessonData.name,
         "cat": lessonData.category,
         "desc": lessonData.description,
+        "grammar": lessonData.grammar,
         "native": nativeData.name,
         "trans": transData.name
     }
