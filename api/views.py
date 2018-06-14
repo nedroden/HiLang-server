@@ -1,4 +1,5 @@
 import json
+import bcrypt
 from django.core import serializers
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
@@ -18,7 +19,6 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
-
 def validate_token(userId, token):
     try:
         user = User.objects.get(pk=userId)
@@ -31,12 +31,15 @@ def validate_token(userId, token):
                 return True
     except ObjectDoesNotExist:
         return False
+    update_attempt(user)
+    return False
+
+def update_attempt(user):
     user.attempt += 1
     if (user.attempt >= 5):
-        destroy_user_tokens(userId)
+        destroy_user_tokens(user.pk)
     else:
         user.save()
-    return False
 
 def parse_params(request):
     if (request.method == 'POST'):
@@ -52,15 +55,17 @@ def check_token(request):
             return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
     return JsonResponse({'approved': False}, safe=False)
 
-
 def destroy_token(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
+        user = None;
         try:
             user = User.objects.get(pk=data['user_id'])
-            token = Token.objects.get(token=data['token'], user=user).delete()
+            Token.objects.get(token=data['token'], user=user).delete()
         except ObjectDoesNotExist:
-            pass
+            if user != None:
+                update_attempt()
+    return HttpResponse('Tokens destroyed')
 
 
 def destroy_user_tokens(user_id):
@@ -68,7 +73,6 @@ def destroy_user_tokens(user_id):
     user.attempt = 0
     user.save()
     Token.objects.filter(user=user).delete()
-
 
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
@@ -78,25 +82,27 @@ def login(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
         try:
-            print(data)
-            user = User.objects.get(email=data['email'], password=data['password'])
-            token = Token(token=generate_token(), user=user)
-            token.save()
-            response = {
-                        'user_id': user.pk,
-                        'token': token.token
-                        }
-            return JsonResponse(response, safe=False)
+            user = User.objects.get(email=data['email'])
+            if (bcrypt.checkpw(data['password'].encode(), user.password.encode())):
+                return JsonResponse(create_session(user), safe=False)
         except ObjectDoesNotExist:
             pass
     return JsonResponse({}, safe=False)
+
+def create_session(user):
+    token = Token(token=generate_token(), user=user)
+    token.save()
+    response = {
+                'user_id': user.pk,
+                'token': token.token
+                }
+    return response
 
 # Users
 def get_users(request):
     data = parse_params(request);
     if (data == None):
         return HttpResponseForbidden();
-
     return get_json_response(serializers.serialize('json', User.objects.all()))
 
 def get_user(request, user_id):
@@ -107,17 +113,19 @@ def get_user(request, user_id):
     return get_json_response(serializers.serialize('json', User.objects.filter(id=user_id)))
 
 def create_user(request):
-    data = parse_params(request);
-    if (data == None):
-        return HttpResponseForbidden();
-
-    user = User(email=data['email'], name=data['name'], password=data['password'], distributor=0)
-    try:
-        user.save()
-        return get_json_response(serializers.serialize('json', [user]))
-    except IntegrityError as e:
-        return get_json_response(serializers.serialize('json', []))
-
+    if (request.method == 'POST'):
+        data = json.loads(request.body.decode('utf-8'))
+        try:
+            User.objects.get(email=data['email'])
+            return JsonResponse({'error': 'E-mail is already in user'})
+        except ObjectDoesNotExist:
+            try:
+                user = User(email=data['email'], name=data['name'], password=bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(14)).decode(), distributor=0)
+                user.save()
+                return JsonResponse(create_session(user), safe=False)
+            except IntegrityError as e:
+                pass
+    return JsonResponse({}, safe=False)
 
 # Courses
 def get_courses(request):
