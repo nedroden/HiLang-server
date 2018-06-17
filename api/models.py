@@ -6,6 +6,7 @@ class User(models.Model):
     name = models.CharField(max_length=25)
     password = models.CharField(max_length=60)
     distributor = models.PositiveSmallIntegerField(default=0)
+    salt = models.CharField(max_length=50, null=True)
     attempt = models.IntegerField(default=0)
 
     def __str__(self):
@@ -17,6 +18,7 @@ class User(models.Model):
             "name": self.name,
             "password": self.password,
             "distributer": self.distributor,
+            "salt": self.salt,
             "attempt": self.attempt
         }
 
