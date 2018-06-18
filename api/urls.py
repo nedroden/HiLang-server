@@ -33,6 +33,7 @@ urlpatterns = [
     path('course/<int:course_id>/lessons', views.get_course_lessons, name='course_lessons'),
     path('lesson/<int:id>/details', views.get_lesson_det, name='lesson_details'),
     path('lesson/<int:lesson_id>/edit_desc', views.edit_lesson_desc, name='edit_lesson_desc'),
+    path('lessontypes', views.get_lesson_types, name='lesson_type'),
 
     # Languages
     path('languages/', views.get_languages, name='languages'),
