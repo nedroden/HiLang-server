@@ -264,20 +264,26 @@ def get_lesson_types(request):
     data = parse_params(request);
     if (data == None):
         return HttpResponseForbidden();
-
     return get_json_response(serializers.serialize('json', LessonType.objects.all()))
 
 def create_lesson(request, course_id):
     data = parse_params(request)
     if (data == None):
-        return HttpResponseForbidden()
-    course = Course.objects.get(pk=course_id)
+        return HttpResponseForbidden();
+        
+    try:
+        course = Course.objects.get(pk=course_id)
+        lessonType = LessonType.objects.get(pk=data['lessonType'])
+    except ObjectDoesNotExist:
+        return get_json_response(serializers.serialize('json', []))
+
     if Lesson.objects.get(pk=data['id']) == None:
         lesson = Lesson(name=data['title'],
                         category=data['category'],
                         description=data['description'],
                         grammar=data['grammar'],
-                        course=course)
+                        course=course,
+                        lessonType=lessonType)
         lesson.save()
         for question, answer in data['words'].items():
             entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
