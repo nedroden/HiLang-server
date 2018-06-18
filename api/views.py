@@ -138,12 +138,12 @@ def create_user(request):
             return JsonResponse({'error': 'E-mail is already in user'})
         except ObjectDoesNotExist:
             try:
-                salt = bcrypt.gensalt(14).decode()
+                salt = bcrypt.gensalt(14)
                 user = User(email=data['email'],
                             name=data['name'],
-                            password=bcrypt.hashpw(data['password'].encode(), salt),
+                            password=bcrypt.hashpw(data['password'].encode(), salt).decode(),
                             distributor=0,
-                            salt=salt)
+                            salt=salt.decode())
                 user.save()
                 return JsonResponse(create_session(user), safe=False)
             except IntegrityError as e:
@@ -278,7 +278,7 @@ def create_lesson(request, course_id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-        
+
     try:
         course = Course.objects.get(pk=course_id)
         lessonType = LessonType.objects.get(pk=data['lessonType'])
