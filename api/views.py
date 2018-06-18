@@ -12,6 +12,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
+
 def index(request):
     return HttpResponse("Dit is een API")
 
@@ -20,6 +21,7 @@ def generate_token():
     alphabet = string.ascii_letters + string.digits
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
+
 
 def validate_token(userId, token):
     try:
@@ -35,6 +37,7 @@ def validate_token(userId, token):
         return False
     update_attempt(user)
     return False
+
 
 def update_attempt(user):
     user.attempt += 1
@@ -62,16 +65,17 @@ def check_token(request):
                 pass
     return JsonResponse({'approved': False}, safe=False)
 
+
 def destroy_token(request):
     if (request.method == 'POST'):
         data = json.loads(request.body.decode('utf-8'))
-        user = None;
+        user = None
         try:
             user = User.objects.get(pk=data['user_id'])
             Token.objects.get(token=data['token'], user=user).delete()
         except (ObjectDoesNotExist, KeyError):
             if user != None:
-                update_attempt()
+                update_attempt(user)
     return HttpResponse('Tokens destroyed')
 
 
@@ -81,8 +85,10 @@ def destroy_user_tokens(user_id):
     user.save()
     Token.objects.filter(user=user).delete()
 
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
+
 
 # Login
 def login(request):
@@ -91,6 +97,8 @@ def login(request):
         try:
             user = User.objects.get(email=data['email'])
             hashed = bcrypt.hashpw(data['password'].encode(), user.salt.encode())
+            print(hashed)
+            print(user.password.encode())
             if (hashed == user.password.encode()):
                 return JsonResponse(create_session(user), safe=False)
         except ObjectDoesNotExist:
