@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class User(models.Model):
     email = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=25)
-    password = models.CharField(max_length=25)
+    password = models.CharField(max_length=60)
     distributor = models.PositiveSmallIntegerField(default=0)
+    salt = models.CharField(max_length=50, null=True)
     attempt = models.IntegerField(default=0)
 
     def __str__(self):
@@ -18,6 +18,7 @@ class User(models.Model):
             "name": self.name,
             "password": self.password,
             "distributer": self.distributor,
+            "salt": self.salt,
             "attempt": self.attempt
         }
 
@@ -122,6 +123,7 @@ class Lesson(models.Model):
     description = models.TextField(null=True)
     grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    lessonType = models.ForeignKey(LessonType, null=True, on_delete=models.CASCADE)
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
@@ -138,6 +140,7 @@ class Lesson(models.Model):
             "cat": self.category,
             "desc": self.description,
             "course": self.course,
+            "lessontype": self.lessonType,
         }
 
 
