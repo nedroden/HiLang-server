@@ -44,12 +44,12 @@ INSERT INTO `api_favorite` (`id`, `course_id`, `user_id`) VALUES
 (3,1,3),
 (4,3,1);
 
-INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`,`attempt`) VALUES
-(1, 'piet@hotmail.com', 'piet', 'welkom123', 0,0),
-(2, 'jan@hotmail.com', 'jan', 'welkom123', 1,0),
-(3, 'peter@hotmail.com', 'peter', 'welkom123', 0,0),
-(4, 'sara@hotmail.com', 'sara', 'welkom123', 1,0),
-(5, 'evert@hotmail.com', 'evert', 'welkom123', 0,0);
+INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`,`attempt`, `salt`) VALUES
+(1, 'piet@hotmail.com', 'piet', '$2b$14$DCPL27eNDFgiZeirSdlkLezj6xPk1PxtEiWA2y81J82M1i76Pg9yy', 0,0, '$2b$14$lv3.j37BeHx5wOJP9E.H3e'),
+(2, 'jan@hotmail.com', 'jan', '$2b$14$KO0.3tK1D3U/pO/zL7TyDeiXZl4zUMzjP2re3wIslCJntgJkUvNpi', 1,0, '$2b$14$lv3.j37BeHx5wOJP9E.H3e'),
+(3, 'peter@hotmail.com', 'peter', '$2b$14$OPt82Ho/ObhUe/qFczelSuEDSiu30QEwBmiY/idztCd6tZqgnzivO', 0,0, '$2b$14$lv3.j37BeHx5wOJP9E.H3e'),
+(4, 'sara@hotmail.com', 'sara', '$2b$14$kg0GTLPopgoe/2o0dtz4jejfCgrjAn4e3feemd3//fBSItClD.ND.', 1,0, '$2b$14$lv3.j37BeHx5wOJP9E.H3e'),
+(5, 'evert@hotmail.com', 'evert', '$2b$14$oDwX/e6NmHnvzhwPWgCF4.8O9I4GXgc.QdUYZsR9LWS4RjlSFzz46', 0,0, '$2b$14$lv3.j37BeHx5wOJP9E.H3e');
 
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
