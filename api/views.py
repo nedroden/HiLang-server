@@ -51,8 +51,11 @@ def parse_params(request):
 def check_token(request):
     if (request.method == 'POST'):
         if (request.body):
-            data = json.loads(request.body.decode('utf-8'))
-            return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
+            try:
+                data = json.loads(request.body.decode('utf-8'))
+                return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
+            except KeyError:
+                pass
     return JsonResponse({'approved': False}, safe=False)
 
 def destroy_token(request):
@@ -62,7 +65,7 @@ def destroy_token(request):
         try:
             user = User.objects.get(pk=data['user_id'])
             Token.objects.get(token=data['token'], user=user).delete()
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, KeyError):
             if user != None:
                 update_attempt()
     return HttpResponse('Tokens destroyed')
@@ -83,7 +86,8 @@ def login(request):
         data = json.loads(request.body.decode('utf-8'))
         try:
             user = User.objects.get(email=data['email'])
-            if (bcrypt.checkpw(data['password'].encode(), user.password.encode())):
+            hashed = bcrypt.hashpw(data['password'].encode(), user.salt.encode())
+            if (hashed == user.password.encode()):
                 return JsonResponse(create_session(user), safe=False)
         except ObjectDoesNotExist:
             pass
@@ -120,7 +124,12 @@ def create_user(request):
             return JsonResponse({'error': 'E-mail is already in user'})
         except ObjectDoesNotExist:
             try:
-                user = User(email=data['email'], name=data['name'], password=bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(14)).decode(), distributor=0)
+                salt = bcrypt.gensalt(14).decode()
+                user = User(email=data['email'],
+                            name=data['name'],
+                            password=bcrypt.hashpw(data['password'].encode(), salt),
+                            distributor=0,
+                            salt=salt)
                 user.save()
                 return JsonResponse(create_session(user), safe=False)
             except IntegrityError as e:
@@ -237,6 +246,12 @@ def search_courses(request):
 
 
 # Lessons
+def get_lesson_types(request):
+    data = parse_params(request);
+    if (data == None):
+        return HttpResponseForbidden();
+
+    return get_json_response(serializers.serialize('json', LessonType.objects.all()))
 
 def create_lesson(request, course_id):
     data = parse_params(request);
