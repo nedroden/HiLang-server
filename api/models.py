@@ -123,6 +123,7 @@ class Lesson(models.Model):
     description = models.TextField(null=True)
     grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    lessonType = models.ForeignKey(LessonType, null=True, on_delete=models.CASCADE)
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
@@ -139,6 +140,7 @@ class Lesson(models.Model):
             "cat": self.category,
             "desc": self.description,
             "course": self.course,
+            "lessontype": self.lessonType,
         }
 
 
