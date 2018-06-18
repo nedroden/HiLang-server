@@ -1,6 +1,5 @@
 ﻿SET FOREIGN_KEY_CHECKS = 0;
 
-
 INSERT INTO `api_course` (`id`, `name`, `description`, `user_id`, `image`, `subscribers`, `native_lang_id`, `trans_lang_id`, `public`) VALUES
 (1, 'Peninsular Spanish for beginners', 'This course is meant for those who are interested in learning Spanish the way it is spoken in Spain.', 0, 'http://wallpoper.com/images/00/38/97/83/cityscapes-spain_00389783.jpg', 1, 1, 6, 1);
 
@@ -45,7 +44,6 @@ INSERT INTO `api_user` (`id`, `email`, `name`, `password`, `distributor`,`attemp
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
 (1, 'pbkdf2_sha256$100000$kEJf41igeCuu$iHOT0wafWzt+SlSOD7N7iPdigUNx5bzVJfz5g8JPyR8=', '2018-05-30 08:00:26.447438', 1, 'root', '', '', 'bertde.boer@hotmail.com', 1, 1, '2018-05-30 07:59:58.949897');
 
-<<<<<<< HEAD
 INSERT INTO `api_wordlistquestion` (`id`, `native`, `translation`, `lesson_id`) VALUES
 (1, 'Hello', 'Hola', 1),
 (2, 'How are you? (informal)', '¿Qué tal?', 1),
@@ -59,6 +57,3 @@ INSERT INTO `api_wordlistquestion` (`id`, `native`, `translation`, `lesson_id`) 
 (10, 'Is there a supermarket nearby?', 'Hay un supermercado por aquí cerca?', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
-=======
-SET FOREIGN_KEY_CHECKS = 1;
->>>>>>> upstream/master
