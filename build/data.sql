@@ -12,7 +12,8 @@ INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
 (6, 'Spanish', 'spain');
 
 INSERT INTO `api_lesson` (`id`, `name`, `category`, `description`, `course_id`) VALUES
-(1, 'Welcome to Spain', 'basic phrases', 'A quick introduction to the Spanish language.', 'Grammar here.', 1);
+(1, 'Welcome to Spain', 'basic phrases', 'A quick introduction to the Spanish language.', 'Grammar here.', 1),
+(2, 'Making friends', 'friendship', 'In this lesson you will learn how to make friends.', 'In this lesson you will learn how to make friends.', 4, 2);
 
 INSERT INTO `api_lessontype` (`id`, `name`, `description`) VALUES
 (1, 'Grammar', 'Learn grammar'),
@@ -54,6 +55,17 @@ INSERT INTO `api_wordlistquestion` (`id`, `native`, `translation`, `lesson_id`) 
 (7, 'Thank you very much', 'Muchas gracias', 1),
 (8, 'Help me!', 'Ayúdame!', 1),
 (9, 'A beer, please.', 'Una cerveza, por favor.', 1),
-(10, 'Is there a supermarket nearby?', 'Hay un supermercado por aquí cerca?', 1);
+(10, 'Is there a supermarket nearby?', 'Hay un supermercado por aquí?', 1),
+(11, 'What\'s your name?', '¿Cómo te llamas?', 2),
+(12, 'Nice to meet you!', '¡Encantado!', 2),
+(13, 'Would you like to go for a drink?', '¿Quieres tomar algo?', 2),
+(14, 'Where do you live?', '¿Dónde vives?', 2),
+(15, 'My name is Juan.', 'Me llamo Juan.', 2),
+(16, 'I like movies.', 'Me gustan las películas.', 2),
+(17, 'I\'m from France.', 'Soy de Francia.', 2),
+(18, 'Catalonia is Spain.', 'Cataluña es España.', 2),
+(19, 'I live in Amsterdam.', 'Vivo en Ámsterdam.', 2),
+(20, 'What do you study?', '¿Qué estudias?', 2),
+(21, 'Spanish is not my native language.', 'El castellano no es mi lengua materna.', 2);
 
 SET FOREIGN_KEY_CHECKS = 1;
