@@ -327,10 +327,21 @@ def get_lesson(request, id):
     if data is None:
         return HttpResponseForbidden()
 
-    lesson = list(Lesson.objects.filter(pk=id).values())
-    lesson[0]['vocabulary'] = list(WordListQuestion.objects.filter(lesson=id).values())
+    lesson = Lesson.objects.get(pk=id)
+    lesson_vocabulary = list(WordListQuestion.objects.filter(lesson=id).values())
 
-    return HttpResponse(json.dumps(lesson), content_type='application/json')
+    json_data = {
+        'id': lesson.id,
+        'name': lesson.name,
+        'category': lesson.category,
+        'description': lesson.description,
+        'grammar': lesson.grammar,
+        'course_id': lesson.course_id,
+        'lessonType_id': lesson.lessonType_id,
+        'vocabulary': lesson_vocabulary
+    }
+
+    return JsonResponse(json_data)
 
 
 def delete_lesson(request, id):
