@@ -237,6 +237,7 @@ def edit_course_desc(request, course_id):
     course.save()
     return HttpResponse(request)
 
+
 def edit_course_lang(request, course_id):
     data = parse_params(request)
     if data is None:
@@ -438,6 +439,9 @@ def subscribe(request):
         return HttpResponseForbidden()
     Subscription.objects.create(user=User.objects.get(pk=data['user']),
                                 course=Course.objects.get(pk=data['course']))
+    course = Course.objects.get(pk=data['course'])
+    course.subscribers = course.subscribers + 1
+    course.save()
     return get_json_response(request)
 
 
@@ -449,6 +453,9 @@ def unsubscribe(request):
     entry = Subscription.objects.filter(user=User.objects.get(pk=data['user']),
                                         course=Course.objects.get(pk=data['course']))
     entry.delete()
+    course = Course.objects.get(pk=data['course'])
+    course.subscribers = course.subscribers - 1
+    course.save()
     return get_json_response(request)
 
 
