@@ -12,6 +12,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from api.models import *
 
+
 def index(request):
     return HttpResponse("Dit is een API")
 
@@ -21,13 +22,14 @@ def generate_token():
     while True:
         return ''.join(random.SystemRandom().choice(alphabet) for i in range(60))
 
+
 def validate_token(userId, token):
     try:
         user = User.objects.get(pk=userId)
         userTokens = Token.objects.filter(user=user)
         for userToken in userTokens:
-            if (userToken.token == token):
-                if (user.attempt > 0):
+            if userToken.token == token:
+                if user.attempt > 0:
                     user.attempt = 0
                     user.save()
                 return True
@@ -36,25 +38,26 @@ def validate_token(userId, token):
     update_attempt(user)
     return False
 
+
 def update_attempt(user):
     user.attempt += 1
-    if (user.attempt >= 5):
+    if user.attempt >= 5:
         destroy_user_tokens(user.pk)
     else:
         user.save()
 
 
 def parse_params(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
-        if (validate_token(data['user_id'], data['token'])):
+        if validate_token(data['user_id'], data['token']):
             return data['params']
     return None
 
 
 def check_token(request):
-    if (request.method == 'POST'):
-        if (request.body):
+    if request.method == 'POST':
+        if request.body:
             try:
                 data = json.loads(request.body.decode('utf-8'))
                 return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
@@ -62,16 +65,17 @@ def check_token(request):
                 pass
     return JsonResponse({'approved': False}, safe=False)
 
+
 def destroy_token(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
-        user = None;
+        user = None
         try:
             user = User.objects.get(pk=data['user_id'])
             Token.objects.get(token=data['token'], user=user).delete()
         except (ObjectDoesNotExist, KeyError):
-            if user != None:
-                update_attempt()
+            if user is not None:
+                update_attempt(user)
     return HttpResponse('Tokens destroyed')
 
 
@@ -81,21 +85,24 @@ def destroy_user_tokens(user_id):
     user.save()
     Token.objects.filter(user=user).delete()
 
+
 def get_json_response(serialize):
     return HttpResponse(serialize, content_type='application/json')
 
+
 # Login
 def login(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         try:
             user = User.objects.get(email=data['email'])
             hashed = bcrypt.hashpw(data['password'].encode(), user.salt.encode())
-            if (hashed == user.password.encode()):
+            if hashed == user.password.encode():
                 return JsonResponse(create_session(user), safe=False)
         except ObjectDoesNotExist:
             pass
     return JsonResponse({}, safe=False)
+
 
 def create_session(user):
     token = Token(token=generate_token(), user=user)
@@ -110,22 +117,21 @@ def create_session(user):
 # Users
 def get_users(request):
     data = parse_params(request)
-    if (data == None):
+    if (data is None):
         return HttpResponseForbidden()
-
     return get_json_response(serializers.serialize('json', User.objects.all()))
 
 
 def get_user(request, user_id):
     data = parse_params(request)
-    if (data == None):
+    if (data is None):
         return HttpResponseForbidden()
 
     return get_json_response(serializers.serialize('json', User.objects.filter(id=user_id)))
 
 
 def create_user(request):
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
         try:
             User.objects.get(email=data['email'])
@@ -144,17 +150,18 @@ def create_user(request):
                 pass
     return JsonResponse({}, safe=False)
 
+
 # Courses
 def get_courses(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
 
 def get_course(request, course_id, user_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     courseData = Course.objects.get(id=course_id)
@@ -186,7 +193,7 @@ def get_course(request, course_id, user_id):
 
 def get_public_courses(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     return get_json_response(serializers.serialize('json', Course.objects.filter(public=1)))
@@ -194,7 +201,7 @@ def get_public_courses(request):
 
 def get_course_lang(request, language_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     return get_json_response(serializers.serialize('json', Course.objects.filter(language=language_id)))
@@ -202,18 +209,18 @@ def get_course_lang(request, language_id):
 
 def create_course(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     user = User.objects.get(pk=data['user'])
-    course = Course(name=data['name'], user=user)
+    course = Course(name=data['name'], user=user, trans_lang=Language.objects.get(pk=data['trans_lang']), native_lang=Language.objects.get(pk=data['native_lang']), public=0)
     course.save()
     return get_json_response(serializers.serialize('json', [course]))
 
 
 def get_user_courses(request, user_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     courseData = Course.objects.filter(user=User.objects.get(pk=user_id))
@@ -222,7 +229,7 @@ def get_user_courses(request, user_id):
 
 def edit_course_desc(request, course_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     course = Course.objects.get(pk=course_id)
@@ -231,9 +238,20 @@ def edit_course_desc(request, course_id):
     return HttpResponse(request)
 
 
+def edit_course_lang(request, course_id):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    course = Course.objects.get(pk=course_id)
+    course.trans_lang = Language.objects.get(pk=data['lang_id'])
+    course.save()
+    return  HttpResponse(request)
+
+
 def search_courses(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     list1 = Course.objects.filter(name__icontains=data['name'], public=1)
     list2 = Course.objects.filter(description__icontains=data['name'], public=1)
@@ -261,15 +279,16 @@ def search_courses(request):
 
 # Lessons
 def get_lesson_types(request):
-    data = parse_params(request);
-    if (data == None):
-        return HttpResponseForbidden();
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
     return get_json_response(serializers.serialize('json', LessonType.objects.all()))
+
 
 def create_lesson(request, course_id):
     data = parse_params(request)
-    if (data == None):
-        return HttpResponseForbidden();
+    if data is None:
+        return HttpResponseForbidden()
 
     try:
         course = Course.objects.get(pk=course_id)
@@ -305,7 +324,7 @@ def create_lesson(request, course_id):
 
 def get_lesson(request, id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     lesson = Lesson.objects.get(pk=id)
@@ -327,7 +346,7 @@ def get_lesson(request, id):
 
 def delete_lesson(request, id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     if request.method == 'DELETE':
         lesson = Lesson.objects.get(pk=id)
@@ -337,7 +356,7 @@ def delete_lesson(request, id):
 
 def get_course_lessons(request, course_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     lessonData = Lesson.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', lessonData))
@@ -345,7 +364,7 @@ def get_course_lessons(request, course_id):
 
 def get_lesson_det(request, id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     lessonData = Lesson.objects.get(pk=id)
     courseData = Course.objects.get(pk=lessonData.course_id)
@@ -365,7 +384,7 @@ def get_lesson_det(request, id):
 
 def edit_lesson_desc(request, lesson_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     lesson = Lesson.objects.get(pk=lesson_id)
     data = json.loads(request.body.decode('utf-8'))
@@ -381,13 +400,14 @@ def get_languages(request):
 
 def get_lang_details(request, language_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     return get_json_response(serializers.serialize('json', Language.objects.filter(id=language_id)))
 
+
 def get_lang_course(request, course_id):
     data = parse_params(request)
-    if data == None:
+    if data is None:
         return HttpResponseForbidden()
 
     courseData = Course.objects.get(pk=course_id)
@@ -399,10 +419,11 @@ def get_lang_course(request, course_id):
     }
     return JsonResponse(returnData)
 
+
 # Subscriptions
 def get_user_subscriptions(request, user_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     subscriptionData = serializers.serialize('json', Subscription.objects.filter(user=User.objects.get(pk=user_id)))
@@ -417,7 +438,7 @@ def get_user_subscriptions(request, user_id):
 
 def get_course_subscriptions(request, course_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     return get_json_response(serializers.serialize('json', Subscription.objects.filter(course=course_id)))
@@ -425,28 +446,34 @@ def get_course_subscriptions(request, course_id):
 
 def subscribe(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     Subscription.objects.create(user=User.objects.get(pk=data['user']),
                                 course=Course.objects.get(pk=data['course']))
+    course = Course.objects.get(pk=data['course'])
+    course.subscribers = course.subscribers + 1
+    course.save()
     return get_json_response(request)
 
 
 def unsubscribe(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
 
     entry = Subscription.objects.filter(user=User.objects.get(pk=data['user']),
                                         course=Course.objects.get(pk=data['course']))
     entry.delete()
+    course = Course.objects.get(pk=data['course'])
+    course.subscribers = course.subscribers - 1
+    course.save()
     return get_json_response(request)
 
 
 # Favorite
 def add_favorite(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     Favorite.objects.create(user=User.objects.get(pk=data['user']), course=Course.objects.get(pk=data['course']))
     return get_json_response(request)
@@ -454,7 +481,7 @@ def add_favorite(request):
 
 def del_favorite(request):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     entry = Favorite.objects.filter(user=User.objects.get(pk=data['user']),
                                     course=Course.objects.get(pk=data['course']))
@@ -464,7 +491,7 @@ def del_favorite(request):
 
 def get_user_favorites(request, user_id):
     data = parse_params(request)
-    if (data == None):
+    if data is None:
         return HttpResponseForbidden()
     favoriteData = serializers.serialize('json', Favorite.objects.filter(user=User.objects.get(pk=user_id)))
     data = json.loads(favoriteData)

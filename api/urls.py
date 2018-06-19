@@ -24,6 +24,7 @@ urlpatterns = [
     path('course/<int:user_id>/<int:course_id>/', views.get_course, name='course'),
     path('course/create/', views.create_course, name='create_course'),
     path('course/<int:course_id>/edit_desc', views.edit_course_desc, name='edit_course_desc'),
+    path('course/<int:course_id>/edit_lang', views.edit_course_lang, name='edit_course_lang'),
     path('course/search', views.search_courses,name="search_courses"),
 
     # Lessons
