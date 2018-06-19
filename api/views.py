@@ -213,7 +213,7 @@ def create_course(request):
         return HttpResponseForbidden()
 
     user = User.objects.get(pk=data['user'])
-    course = Course(name=data['name'], user=user)
+    course = Course(name=data['name'], user=user, trans_lang=Language.objects.get(pk=data['trans_lang']), native_lang=Language.objects.get(pk=data['native_lang']), public=0)
     course.save()
     return get_json_response(serializers.serialize('json', [course]))
 
@@ -236,6 +236,16 @@ def edit_course_desc(request, course_id):
     course.description = data['desc']
     course.save()
     return HttpResponse(request)
+
+def edit_course_lang(request, course_id):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    course = Course.objects.get(pk=course_id)
+    course.trans_lang = Language.objects.get(pk=data['lang_id'])
+    course.save()
+    return  HttpResponse(request)
 
 
 def search_courses(request):
@@ -382,6 +392,7 @@ def get_lang_details(request, language_id):
         return HttpResponseForbidden()
     return get_json_response(serializers.serialize('json', Language.objects.filter(id=language_id)))
 
+
 def get_lang_course(request, course_id):
     data = parse_params(request)
     if data is None:
@@ -395,6 +406,7 @@ def get_lang_course(request, course_id):
         "trans": transData.name
     }
     return JsonResponse(returnData)
+
 
 # Subscriptions
 def get_user_subscriptions(request, user_id):

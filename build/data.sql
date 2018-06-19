@@ -2,9 +2,9 @@
 
 
 INSERT INTO `api_course` (`id`, `name`, `description`, `user_id`, `image`, `subscribers`, `native_lang_id`, `trans_lang_id`, `public`) VALUES
-(1, 'English for beginners', 'Learn to write English properly.', 1, 'http://www.linguapaths.com/wp-content/uploads/2016/09/regular-english-course-valencia.jpg', 69,1,2,1),
-(2, 'French for beginners', 'Learn to speak French properly', 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420,3,2,0),
-(3, 'German for beginners', 'Learn to write Germam properly', 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,4,2,1);
+(1, 'English for beginners', 'Learn to write English properly.', 1, 'http://www.linguapaths.com/wp-content/uploads/2016/09/regular-english-course-valencia.jpg', 69,2,1,1),
+(2, 'French for beginners', 'Learn to speak French properly', 4, 'https://i.pinimg.com/originals/3a/14/f0/3a14f0325f7316ef603539116dae02ac.jpg', 420,2,3,0),
+(3, 'German for beginners', 'Learn to write Germam properly', 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,2,4,1);
 
 INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
 (1, 'English', 'england'),
@@ -12,7 +12,8 @@ INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
 (3, 'German', 'germany'),
 (4, 'French', 'france'),
 (5, 'Russian', 'russia'),
-(6, 'Spanish', 'spain');
+(6, 'Spanish', 'spain'),
+(7, 'Other',   '');
 
 INSERT INTO `api_lesson` (`id`, `name`, `category`, `description`, `course_id`) VALUES
 (1, 'English lesson 1', 'Food', 'In this lesson you will learn absolutly nothing', 1),
