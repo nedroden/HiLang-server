@@ -143,10 +143,12 @@ class Lesson(models.Model):
             "lessontype": self.lessonType,
         }
 
+
 class LessonCompleted(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    grade = models.DecimalField(max_digits=3, decimal_places=2)
+    grade = models.DecimalField(max_digits=3, decimal_places=1)
+
 
 class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
