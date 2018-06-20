@@ -29,6 +29,7 @@ urlpatterns = [
 
     # Lessons
     path('course/<int:course_id>/create-lesson', views.create_lesson, name='create_lesson'),
+    path('course/<int:lesson_id>/get_questions', views.get_sentence_questions, name='get_questions'),
     path('lesson/<int:id>', views.get_lesson, name='lesson'),
     path('lesson/<int:id>/delete', views.delete_lesson, name='lesson_delete'),
     path('course/<int:course_id>/lessons', views.get_course_lessons, name='course_lessons'),

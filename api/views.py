@@ -290,8 +290,8 @@ def create_lesson(request, course_id):
     if data is None:
         return HttpResponseForbidden()
     try:
+        # Is this course yours???
         course = Course.objects.get(pk=course_id)
-        lessonType = LessonType.objects.get(pk=data['lessonType'])
     except ObjectDoesNotExist:
         return get_json_response(serializers.serialize('json', []))
 
@@ -319,11 +319,24 @@ def create_lesson(request, course_id):
         lesson.save()
         listData = WordListQuestion.objects.filter(lesson=lesson)
         listData.delete()
-        for question, answer in data['words'].items():
-            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
-            entry.save()
+    else:
+        lesson = Lesson(name=data['title'],
+                        category=data['category'],
+                        description=data['description'],
+                        grammar=data['grammar'],
+                        course=course)
+        lesson.save()
+
+    upload_questions(data['questions'], lesson)
     return get_json_response(serializers.serialize('json', [lesson]))
 
+def upload_questions(questions, lesson):
+    for question in questions:
+        entry = WordListQuestion(native=question['native'],
+                                 translation=question['translation'],
+                                 lesson=lesson,
+                                 sentenceStructure=question['sentence'])
+        entry.save()
 
 def get_lesson(request, id):
     data = parse_params(request)
@@ -378,6 +391,19 @@ def get_course_lessons(request, course_id):
         return HttpResponseForbidden()
     lessonData = Lesson.objects.filter(course_id=course_id)
     return get_json_response(serializers.serialize('json', lessonData))
+
+def get_sentence_questions(request, lesson_id):
+    data = parse_params(request)
+    if (data ==None):
+        return HttpResponseForbidden()
+
+    questions = []
+    try:
+        lesson = Lesson.objects.get(pk=lesson_id)
+        questions = WordListQuestion.objects.filter(lesson=lesson, sentenceStructure=1)
+    except ObjectDoesNotExist:
+        pass
+    return get_json_response(serializers.serialize('json', questions))
 
 
 def get_lesson_det(request, id):
