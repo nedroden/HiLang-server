@@ -123,7 +123,6 @@ class Lesson(models.Model):
     description = models.TextField(null=True)
     grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    lessonType = models.ForeignKey(LessonType, null=True, on_delete=models.CASCADE)
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
@@ -148,40 +147,11 @@ class WordListQuestion(models.Model):
     native = models.CharField(max_length=100)
     translation = models.CharField(max_length=100)
     lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE)
+    sentenceStructure = models.BooleanField(default=False)
 
     def __repr__(self):
         return {
             "native": self.native,
             "translation": self.translation,
             "lesson": self.lesson,
-        }
-
-
-class SentenceStructureQuestion(models.Model):
-    native = models.CharField(max_length=100)
-    translation = models.CharField(max_length=100)
-    correctOrder = models.CharField(max_length=20)
-    lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE)
-    description = models.TextField(null=True)
-
-    def __repr__(self):
-        return {
-            "native": self.native,
-            "translation": self.translation,
-            "correctOrder": self.correctOrder,
-            "lesson": self.lesson,
-            "desc": self.description,
-        }
-
-
-class SentenceStructureOption(models.Model):
-    value = models.CharField(max_length=100)
-    tag = models.IntegerField()
-    question = models.ForeignKey(SentenceStructureQuestion, on_delete=models.CASCADE)
-
-    def __repr__(self):
-        return {
-            "value": self.value,
-            "tag": self.tag,
-            "question": self.question,
         }
