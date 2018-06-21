@@ -290,15 +290,29 @@ def create_lesson(request, course_id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-
     try:
         # Is this course yours???
         course = Course.objects.get(pk=course_id)
     except ObjectDoesNotExist:
         return get_json_response(serializers.serialize('json', []))
 
-    if ('id' in data):
-        lesson = Lesson.objects.get(pk=data['id'])
+    createable = False
+
+    if data['lesson_id'] == "":
+        createable = True
+
+    if createable:
+        lesson = Lesson.objects.create(name=data['title'],
+                                       category=data['category'],
+                                       description=data['description'],
+                                       grammar=data['grammar'],
+                                       course=course,
+                                       lessonType=lessonType)
+        for question, answer in data['words'].items():
+            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
+            entry.save()
+    else:
+        lesson = Lesson.objects.get(pk=data['lesson_id'])
         lesson.name = data['title']
         lesson.category = data['category']
         lesson.description = data['description']
