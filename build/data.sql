@@ -6,6 +6,7 @@ INSERT INTO `api_course` (`id`, `name`, `description`, `user_id`, `image`, `subs
 (3, 'German for beginners', 'Learn to write Germam properly', 4, 'https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/deutsch-2--tojpeg_1437992131488_x2.jpg', 1337,2,4,1),
 (4, 'Peninsular Spanish for beginners', 'This course is meant for those who are interested in learning Spanish the way it is spoken in Spain.', 1, 'http://wallpoper.com/images/00/38/97/83/cityscapes-spain_00389783.jpg', 1, 1, 6, 1);
 
+
 INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
 (1, 'English', 'england'),
 (2, 'Dutch', 'netherlands'),
@@ -18,6 +19,7 @@ INSERT INTO `api_language` (`id`, `name`, `flag`) VALUES
 INSERT INTO `api_lesson` (`id`, `name`, `category`, `description`, `course_id`) VALUES
 (1, 'Welcome to Spain', 'basic phrases', 'A quick introduction to the Spanish language.', 4),
 (2, 'Making friends', 'friendship', 'In this lesson you will learn how to make friends.', 4);
+
 
 INSERT INTO `api_lessontype` (`id`, `name`, `description`) VALUES
 (1, 'Grammar', 'Learn grammar'),
@@ -71,5 +73,6 @@ INSERT INTO `api_wordlistquestion` (`id`, `native`, `translation`, `lesson_id`, 
 (19, 'I live in Amsterdam.', 'Vivo en Ámsterdam.', 2,0),
 (20, 'What do you study?', '¿Qué estudias?', 2,0),
 (21, 'Spanish is not my native language.', 'El castellano no es mi lengua materna.', 2,0);
+
 
 SET FOREIGN_KEY_CHECKS = 1;

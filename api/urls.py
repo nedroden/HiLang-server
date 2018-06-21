@@ -39,6 +39,7 @@ urlpatterns = [
     path('lesson/<int:user_id>/<int:lesson_id>/completed', views.set_lesson_completed, name="lesson_completed"),
     path('lesson/<int:user_id>/getcompleted', views.get_completed_lessons, name="get_completed_lessons"),
 
+
     # Languages
     path('languages/', views.get_languages, name='languages'),
     path('language/<int:language_id>/', views.get_lang_details, name="lang_details"),
