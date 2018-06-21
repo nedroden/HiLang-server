@@ -53,7 +53,6 @@ def parse_params(request):
         if validate_token(data['user_id'], data['token']):
             return data['params']
     return None
-<<<<<<< HEAD
 
 
 def check_token(request):
@@ -67,21 +66,6 @@ def check_token(request):
     return JsonResponse({'approved': False}, safe=False)
 
 
-=======
-
-
-def check_token(request):
-    if request.method == 'POST':
-        if request.body:
-            try:
-                data = json.loads(request.body.decode('utf-8'))
-                return JsonResponse({'approved': validate_token(data['user_id'], data['token'])}, safe=False)
-            except KeyError:
-                pass
-    return JsonResponse({'approved': False}, safe=False)
-
-
->>>>>>> 7d09fc78e9715b3953967226e70270d5c04370cc
 def destroy_token(request):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
@@ -175,21 +159,13 @@ def get_courses(request):
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
 
-<<<<<<< HEAD
 def get_course(request, course_id):
-=======
-def get_course(request, course_id, user_id):
->>>>>>> 7d09fc78e9715b3953967226e70270d5c04370cc
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-
     courseData = Course.objects.get(id=course_id)
-<<<<<<< HEAD
     authorData = User.objects.get(pk=courseData.user.pk)
-=======
-    authorData = User.objects.get(pk=user_id)
->>>>>>> 7d09fc78e9715b3953967226e70270d5c04370cc
+
     favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     if not favoriteData:
