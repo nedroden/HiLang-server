@@ -300,25 +300,25 @@ def create_lesson(request, course_id):
     if data['lesson_id'] == "":
         createable = True
 
-    if createable:
-        lesson = Lesson.objects.create(name=data['title'],
-                                       category=data['category'],
-                                       description=data['description'],
-                                       grammar=data['grammar'],
-                                       course=course,
-                                       lessonType=lessonType)
-        for question, answer in data['words'].items():
-            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
-            entry.save()
-    else:
-        lesson = Lesson.objects.get(pk=data['lesson_id'])
-        lesson.name = data['title']
-        lesson.category = data['category']
-        lesson.description = data['description']
-        lesson.grammar = data['grammar']
-        lesson.save()
-        listData = WordListQuestion.objects.filter(lesson=lesson)
-        listData.delete()
+        if createable:
+            lesson = Lesson.objects.create(name=data['title'],
+                                           category=data['category'],
+                                           description=data['description'],
+                                           grammar=data['grammar'],
+                                           course=course,
+                                           lessonType=lessonType)
+            for question, answer in data['words'].items():
+                entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
+                entry.save()
+        else:
+            lesson = Lesson.objects.get(pk=data['lesson_id'])
+            lesson.name = data['title']
+            lesson.category = data['category']
+            lesson.description = data['description']
+            lesson.grammar = data['grammar']
+            lesson.save()
+            listData = WordListQuestion.objects.filter(lesson=lesson)
+            listData.delete()
     else:
         lesson = Lesson(name=data['title'],
                         category=data['category'],
