@@ -163,9 +163,9 @@ def get_course(request, course_id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-
     courseData = Course.objects.get(id=course_id)
     authorData = User.objects.get(pk=courseData.user.pk)
+
     favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     if not favoriteData:
@@ -246,7 +246,8 @@ def edit_course_lang(request, course_id):
     course = Course.objects.get(pk=course_id)
     course.trans_lang = Language.objects.get(pk=data['lang_id'])
     course.save()
-    return  HttpResponse(request)
+    return HttpResponse(request)
+
 
 
 def search_courses(request):
@@ -342,7 +343,6 @@ def get_lesson(request, id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-
     lesson = Lesson.objects.get(pk=id)
     lesson_vocabulary = list(WordListQuestion.objects.filter(lesson=id).values())
 
@@ -353,10 +353,8 @@ def get_lesson(request, id):
         'description': lesson.description,
         'grammar': lesson.grammar,
         'course_id': lesson.course_id,
-        'lessonType_id': lesson.lessonType_id,
         'vocabulary': lesson_vocabulary
     }
-
     return JsonResponse(json_data)
 
 
@@ -446,7 +444,6 @@ def set_lesson_completed(request, user_id, lesson_id):
                                        lesson=Lesson.objects.get(pk=lesson_id),
                                        grade=data['grade'])
     return get_json_response(request)
-
 
 # Languages
 def get_languages(request):
