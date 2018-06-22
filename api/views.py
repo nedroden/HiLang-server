@@ -304,21 +304,17 @@ def create_lesson(request, course_id):
     except ObjectDoesNotExist:
         return get_json_response(serializers.serialize('json', []))
 
-    createable = False
+    created = False
+    print(data);
+    if 'lesson_id' in data:
+        created = True
 
-    if data['lesson_id'] == "":
-        createable = True
-
-    if createable:
+    if (not created):
         lesson = Lesson.objects.create(name=data['title'],
                                        category=data['category'],
                                        description=data['description'],
                                        grammar=data['grammar'],
-                                       course=course,
-                                       lessonType=lessonType)
-        for question, answer in data['words'].items():
-            entry = WordListQuestion(native=question, translation=answer, lesson=lesson)
-            entry.save()
+                                       course=course)
     else:
         lesson = Lesson.objects.get(pk=data['lesson_id'])
         lesson.name = data['title']
