@@ -328,13 +328,6 @@ def create_lesson(request, course_id):
         lesson.save()
         listData = WordListQuestion.objects.filter(lesson=lesson)
         listData.delete()
-    else:
-        lesson = Lesson(name=data['title'],
-                        category=data['category'],
-                        description=data['description'],
-                        grammar=data['grammar'],
-                        course=course)
-        lesson.save()
 
     upload_questions(data['questions'], lesson)
     return get_json_response(serializers.serialize('json', [lesson]))
