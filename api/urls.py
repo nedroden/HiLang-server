@@ -21,7 +21,7 @@ urlpatterns = [
     path('courses/public', views.get_public_courses, name='public_courses'),
     path('courses/<int:user_id>/', views.get_user_courses, name='user courses'),
     path('course/language/<int:language_id>/', views.get_course_lang, name='course_by_lang'),
-    path('course/<int:user_id>/<int:course_id>/', views.get_course, name='course'),
+    path('course/<int:course_id>/', views.get_course, name='course'),
     path('course/create/', views.create_course, name='create_course'),
     path('course/<int:course_id>/edit_desc', views.edit_course_desc, name='edit_course_desc'),
     path('course/<int:course_id>/edit_lang', views.edit_course_lang, name='edit_course_lang'),
@@ -36,6 +36,9 @@ urlpatterns = [
     path('lesson/<int:id>/details', views.get_lesson_det, name='lesson_details'),
     path('lesson/<int:lesson_id>/edit_desc', views.edit_lesson_desc, name='edit_lesson_desc'),
     path('lessontypes', views.get_lesson_types, name='lesson_type'),
+    path('lesson/<int:user_id>/<int:lesson_id>/completed', views.set_lesson_completed, name="lesson_completed"),
+    path('lesson/<int:user_id>/getcompleted', views.get_completed_lessons, name="get_completed_lessons"),
+
 
     # Languages
     path('languages/', views.get_languages, name='languages'),
