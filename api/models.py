@@ -8,6 +8,8 @@ class User(models.Model):
     distributor = models.PositiveSmallIntegerField(default=0)
     salt = models.CharField(max_length=50, null=True)
     attempt = models.IntegerField(default=0)
+    bio = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.email

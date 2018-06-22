@@ -127,7 +127,15 @@ def get_user(request, user_id):
     if (data is None):
         return HttpResponseForbidden()
 
-    return get_json_response(serializers.serialize('json', User.objects.filter(id=user_id)))
+    try:
+        user = User.objects.get(pk=user_id)
+        return JsonResponse({'id': user.pk,
+                             'name': user.name,
+                             'email': user.email,
+                             'distributor': user.distributor,
+                             'created_at': user.created_at}, safe=False)
+    except ObjectDoesNotExist:
+        return JsonResponse({}, safe=False)
 
 
 def create_user(request):
@@ -339,7 +347,6 @@ def get_lesson(request, id):
         'description': lesson.description,
         'grammar': lesson.grammar,
         'course_id': lesson.course_id,
-        'lessonType_id': lesson.lessonType_id,
         'vocabulary': lesson_vocabulary
     }
 
