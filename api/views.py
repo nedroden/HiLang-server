@@ -171,36 +171,39 @@ def get_course(request, course_id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-    courseData = Course.objects.get(id=course_id)
-    authorData = User.objects.get(pk=courseData.user.pk)
-    print(courseData);
-    favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
-    subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
-    if not favoriteData:
-        favorite = False
-    else:
-        favorite = True
 
-    if not subscriptionData:
-        subscription = False
-    else:
-        subscription = True
+    try:
+        courseData = Course.objects.get(id=course_id)
+        authorData = User.objects.get(pk=courseData.user.pk)
+        print(courseData);
+        favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
+        subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
+        if not favoriteData:
+            favorite = False
+        else:
+            favorite = True
 
-    returnData = {
-        'id': courseData.id,
-        'name': courseData.name,
-        'author': {'name': authorData.name, 'bio': authorData.bio},
-        'authorId': courseData.user.pk,
-        'description': courseData.description,
-        'image': courseData.image,
-        'native_lang': courseData.native_lang.pk,
-        'trans_lang': courseData.trans_lang.pk,
-        'favorite': favorite,
-        'subscription': subscription,
-        'created_at': courseData.created_at.strftime("%d %b %Y"),
-    }
-    return JsonResponse(returnData)
+        if not subscriptionData:
+            subscription = False
+        else:
+            subscription = True
 
+        returnData = {
+            'id': courseData.id,
+            'name': courseData.name,
+            'author': {'name': authorData.name, 'bio': authorData.bio},
+            'authorId': courseData.user.pk,
+            'description': courseData.description,
+            'image': courseData.image,
+            'native_lang': courseData.native_lang.pk,
+            'trans_lang': courseData.trans_lang.pk,
+            'favorite': favorite,
+            'subscription': subscription,
+            'created_at': courseData.created_at.strftime("%d %b %Y"),
+        }
+        return JsonResponse(returnData)
+    except Exception as e:
+        return HttpResponse('false')
 
 def get_public_courses(request):
     data = parse_params(request)
@@ -237,6 +240,18 @@ def get_user_courses(request, user_id):
     courseData = Course.objects.filter(user=User.objects.get(pk=user_id))
     return get_json_response(serializers.serialize('json', courseData))
 
+def delete_course(request, course_id):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    try:
+        user = User.objects.get(pk=json.loads(request.body.decode('utf-8'))['user_id'])
+        course = Course.objects.filter(pk=course_id, user=user)
+        course.delete()
+        return HttpResponse("true")
+    except ObjectDoesNotExist:
+        return HttpResponse("false")
 
 def edit_course_desc(request, course_id):
     data = parse_params(request)
@@ -359,10 +374,11 @@ def get_lesson(request, id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-    lesson = Lesson.objects.get(pk=id)
-    lesson_vocabulary = list(WordListQuestion.objects.filter(lesson=id).values())
+    try:
+        lesson = Lesson.objects.get(pk=id)
+        lesson_vocabulary = list(WordListQuestion.objects.filter(lesson=id).values())
 
-    json_data = {
+        json_data = {
         'id': lesson.id,
         'name': lesson.name,
         'category': lesson.category,
@@ -370,8 +386,10 @@ def get_lesson(request, id):
         'grammar': lesson.grammar,
         'course_id': lesson.course_id,
         'vocabulary': lesson_vocabulary
-    }
-    return JsonResponse(json_data)
+        }
+        return JsonResponse(json_data)
+    except ObjectDoesNotExist:
+        return JsonResponse({}, safe=False)
 
 
 def get_completed_lessons(request, user_id):
@@ -393,10 +411,14 @@ def delete_lesson(request, id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-    if request.method == 'DELETE':
-        lesson = Lesson.objects.get(pk=id)
-        lesson.delete(id)
-        return HttpResponse()
+
+    try:
+        user = User.objects.get(pk=json.loads(request.body.decode('utf-8'))['user_id'])
+        lesson = Lesson.objects.filter(pk=id, course__user=user)
+        lesson.delete()
+        return HttpResponse("true")
+    except ObjectDoesNotExist:
+        return HttpResponse("false")
 
 
 def get_course_lessons(request, course_id):
@@ -424,20 +446,23 @@ def get_lesson_det(request, id):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-    lessonData = Lesson.objects.get(pk=id)
-    courseData = Course.objects.get(pk=lessonData.course_id)
-    nativeData = Language.objects.get(pk=courseData.native_lang.id)
-    transData = Language.objects.get(pk=courseData.trans_lang.id)
-    returnData = {
-        "id": lessonData.id,
-        "name": lessonData.name,
-        "cat": lessonData.category,
-        "desc": lessonData.description,
-        "grammar": lessonData.grammar,
-        "native": nativeData.name,
-        "trans": transData.name
-    }
-    return JsonResponse(returnData)
+    try:
+        lessonData = Lesson.objects.get(pk=id)
+        courseData = Course.objects.get(pk=lessonData.course_id)
+        nativeData = Language.objects.get(pk=courseData.native_lang.id)
+        transData = Language.objects.get(pk=courseData.trans_lang.id)
+        returnData = {
+            "id": lessonData.id,
+            "name": lessonData.name,
+            "cat": lessonData.category,
+            "desc": lessonData.description,
+            "grammar": lessonData.grammar,
+            "native": nativeData.name,
+            "trans": transData.name
+        }
+        return JsonResponse(returnData)
+    except ObjectDoesNotExist:
+        return HttpResponse("false")
 
 
 def edit_lesson_desc(request, lesson_id):
