@@ -8,6 +8,8 @@ class User(models.Model):
     distributor = models.PositiveSmallIntegerField(default=0)
     salt = models.CharField(max_length=50, null=True)
     attempt = models.IntegerField(default=0)
+    bio = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.email
@@ -58,6 +60,7 @@ class Course(models.Model):
     native_lang = models.ForeignKey(Language, on_delete=models.CASCADE, null=True, related_name='native')
     trans_lang = models.ForeignKey(Language, null=True, on_delete=models.CASCADE, related_name='translation')
     public = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -123,6 +126,7 @@ class Lesson(models.Model):
     description = models.TextField(null=True)
     grammar = models.TextField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
 
     def delete(self, user_id):
         user = User.objects.get(pk=user_id)
