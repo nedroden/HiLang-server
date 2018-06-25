@@ -173,7 +173,7 @@ def get_course(request, course_id):
         return HttpResponseForbidden()
     courseData = Course.objects.get(id=course_id)
     authorData = User.objects.get(pk=courseData.user.pk)
-
+    print(courseData);
     favoriteData = Favorite.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     subscriptionData = Subscription.objects.filter(user=authorData, course=Course.objects.get(pk=course_id))
     if not favoriteData:
@@ -189,12 +189,15 @@ def get_course(request, course_id):
     returnData = {
         'id': courseData.id,
         'name': courseData.name,
-        'author': authorData.name,
+        'author': {'name': authorData.name, 'bio': authorData.bio},
         'authorId': courseData.user.pk,
         'description': courseData.description,
         'image': courseData.image,
+        'native_lang': courseData.native_lang.pk,
+        'trans_lang': courseData.trans_lang.pk,
         'favorite': favorite,
-        'subscription': subscription
+        'subscription': subscription,
+        'created_at': courseData.created_at.strftime("%d %b %Y"),
     }
     return JsonResponse(returnData)
 
@@ -244,6 +247,22 @@ def edit_course_desc(request, course_id):
     course.description = data['desc']
     course.save()
     return HttpResponse(request)
+
+def update_course(request):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    try:
+        course = Course.objects.get(pk=data['id'])
+        course.name = data['name']
+        course.description = data['description']
+        course.native_lang = Language.objects.get(pk=data['native_lang'])
+        course.trans_lang = Language.objects.get(pk=data['target_lang'])
+        course.save()
+    except ObjectDoesNotExist:
+        return HttpResponse('false');
+    return HttpResponse('true');
 
 
 def edit_course_lang(request, course_id):
