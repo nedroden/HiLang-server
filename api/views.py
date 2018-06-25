@@ -342,7 +342,6 @@ def create_lesson(request, course_id):
     print(data);
     if 'lesson_id' in data:
         created = True
-
     if (not created):
         lesson = Lesson.objects.create(name=data['title'],
                                        category=data['category'],
