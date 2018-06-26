@@ -28,6 +28,8 @@ urlpatterns = [
     path('course/<int:course_id>/edit_lang', views.edit_course_lang, name='edit_course_lang'),
     path('course/search', views.search_courses,name="search_courses"),
     path('course/update/', views.update_course, name="update_course"),
+    path('course/popular/', views.get_popular_courses, name="popular_courses"),
+    path('course/newest/', views.get_newest_courses, name="newest_courses"),
 
     # Lessons
     path('course/<int:course_id>/create-lesson', views.create_lesson, name='create_lesson'),

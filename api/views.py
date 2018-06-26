@@ -166,6 +166,27 @@ def get_courses(request):
         return HttpResponseForbidden()
     return get_json_response(serializers.serialize('json', Course.objects.all()))
 
+def get_popular_courses(request):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    if 'lang' in data:
+        HttpResponse('test');
+    else:
+        courses = Course.objects.order_by('-subscribers')[:10]
+    return get_json_response(serializers.serialize('json', courses))
+
+def get_newest_courses(request):
+    data = parse_params(request)
+    if data is None:
+        return HttpResponseForbidden()
+
+    if 'lang' in data:
+        HttpResponse('test');
+    else:
+        courses = Course.objects.order_by('-created_at')[:10]
+    return get_json_response(serializers.serialize('json', courses))
 
 def get_course(request, course_id):
     data = parse_params(request)
@@ -272,6 +293,7 @@ def update_course(request):
         course = Course.objects.get(pk=data['id'])
         course.name = data['name']
         course.description = data['description']
+        course.image = data['image']
         course.native_lang = Language.objects.get(pk=data['native_lang'])
         course.trans_lang = Language.objects.get(pk=data['target_lang'])
         course.save()
@@ -296,8 +318,9 @@ def search_courses(request):
     data = parse_params(request)
     if data is None:
         return HttpResponseForbidden()
-    list1 = Course.objects.filter(name__icontains=data['name'], public=1)
-    list2 = Course.objects.filter(description__icontains=data['name'], public=1)
+
+    list1 = Course.objects.filter(name__icontains=data['name'])
+    list2 = Course.objects.filter(description__icontains=data['name'])
     courseData = list1 | list2
     returnData = []
     for course in courseData:
@@ -307,17 +330,17 @@ def search_courses(request):
             if course.id == returnCourse['id']:
                 unique = False
         if unique:
-            returnData.append(
-                {
-                    "id": course.id,
-                    "name": course.name,
-                    "description": course.description,
-                    "image": course.image,
-                    "subscribers": course.subscribers,
-                    "author": author.name
-                }
-            )
-    return JsonResponse(returnData, safe=False)
+            returnData.append({
+                "id": course.id,
+                "name": course.name,
+                "description": course.description,
+                "image": course.image,
+                "subscribers": course.subscribers,
+                "author": author.name,
+                "trans_lang"  : course.trans_lang,
+                "native_lang" : course.native_lang
+            })
+    return get_json_response(serializers.serialize('json', returnData))
 
 
 # Lessons
@@ -378,13 +401,13 @@ def get_lesson(request, id):
         lesson_vocabulary = list(WordListQuestion.objects.filter(lesson=id).values())
 
         json_data = {
-        'id': lesson.id,
-        'name': lesson.name,
-        'category': lesson.category,
-        'description': lesson.description,
-        'grammar': lesson.grammar,
-        'course_id': lesson.course_id,
-        'vocabulary': lesson_vocabulary
+            'id': lesson.id,
+            'name': lesson.name,
+            'category': lesson.category,
+            'description': lesson.description,
+            'grammar': lesson.grammar,
+            'course_id': lesson.course_id,
+            'vocabulary': lesson_vocabulary
         }
         return JsonResponse(json_data)
     except ObjectDoesNotExist:
