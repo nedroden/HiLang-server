@@ -327,20 +327,20 @@ def search_courses(request):
         author = course.user
         unique = True
         for returnCourse in returnData:
-            if course.id == returnCourse['id']:
+            if course.pk == returnCourse['id']:
                 unique = False
         if unique:
             returnData.append({
-                "id": course.id,
-                "name": course.name,
-                "description": course.description,
-                "image": course.image,
-                "subscribers": course.subscribers,
-                "author": author.name,
-                "trans_lang"  : course.trans_lang,
-                "native_lang" : course.native_lang
+                'id'          : course.pk,
+                'name'        : course.name,
+                'description' : course.description,
+                'image'       : course.image,
+                'subscribers' : course.subscribers,
+                'author'      : author.name,
+                'trans_lang'  : course.trans_lang.pk,
+                'native_lang' : course.native_lang.pk
             })
-    return get_json_response(serializers.serialize('json', returnData))
+    return JsonResponse(returnData, safe=False)
 
 
 # Lessons
