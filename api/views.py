@@ -160,12 +160,6 @@ def create_user(request):
 
 
 # Courses
-def get_courses(request):
-    data = parse_params(request)
-    if data is None:
-        return HttpResponseForbidden()
-    return get_json_response(serializers.serialize('json', Course.objects.all()))
-
 def get_popular_courses(request):
     data = parse_params(request)
     if data is None:
